@@ -1,14 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-using byte = unsigned char ;
-using word = unsigned short ;
+using u8 = unsigned char ;
+using u16 = unsigned short ;
 using u32 = unsigned int ;
 
 struct MEM
 {
     static constexpr u32 MAX_MEM = 1024*64;
-    byte Data[MAX_MEM];
+    u8 Data[MAX_MEM];
 
     void initialise()
     {
@@ -22,17 +22,17 @@ struct MEM
 
 struct CPU
 {
-    word PC ; // program counter
-    byte SP ; //stack counter 
-    byte A,X,Y; //registers
+    u16 PC ; // program counter
+    u8 SP ; //stack counter 
+    u8 A,X,Y; //registers
      
-    byte C:1 ;
-    byte Z:1 ;
-    byte I:1 ;
-    byte D:1 ;
-    byte B:1 ;
-    byte V:1 ;
-    byte N:1 ;
+    u8 C:1 ;
+    u8 Z:1 ;
+    u8 I:1 ;
+    u8 D:1 ;
+    u8 B:1 ;
+    u8 V:1 ;
+    u8 N:1 ;
 
     void reset( MEM& memory )
     {
