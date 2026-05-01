@@ -24,15 +24,17 @@ struct CPU
 {
     u16 PC ; // program counter
     u8 SP ; //stack counter 
-    u8 A,X,Y; //registers
-     
-    u8 C:1 ;
-    u8 Z:1 ;
-    u8 I:1 ;
-    u8 D:1 ;
-    u8 B:1 ;
-    u8 V:1 ;
-    u8 N:1 ;
+    u8 A; //accumulator
+    u8 X; //index resistor X
+    u8 Y; //index resister Y
+    
+    u8 C:1 ;  //carry flag
+    u8 Z:1 ;  //zero flag
+    u8 I:1 ;  //interrupt disable
+    u8 D:1 ;  //decimal mode
+    u8 B:1 ;  //break command
+    u8 V:1 ;  //overflow flag
+    u8 N:1 ;  //negative flag
 
     void reset( MEM& memory )
     {
