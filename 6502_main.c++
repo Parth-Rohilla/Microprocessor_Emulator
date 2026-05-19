@@ -39,11 +39,60 @@ struct CPU
     void reset( MEM& memory )
     {
         PC = 0xFFFC;
-        SP = 0x0100;
+        SP = 0xFF;
         C=Z=I=D=B=V=N=0;
         A=X=Y=0;
         memory.initialise();
 
+    }
+
+    u8 fetchByte(int& cycle,MEM & memory)
+    {
+        u8 data = memory.Data[PC];
+        PC++;
+        cycle--;
+        return data ;
+    }
+
+    u8 readByte(int& cycle,u16 address,MEM& memory)
+    {
+        u8 data = memory.Data[address];
+        cycle--;
+        return data;
+    }
+
+    void writeByte(u8 value, int& cycle, u16 address, MEM& memory)
+    {
+        memory.Data[address] = value;
+        cycle--;
+    }
+
+    void execute(int cycles,MEM& memory)
+    {
+        while(cycles > 0)
+        {
+            u8 instruction = fetchByte(cycles, memory);
+            
+            switch (instruction)
+            {
+                case 0xA9:
+                {
+                    u8 value = fetchByte(cycles, memory);
+                    A = value;
+
+                    setZeroAndNegativeFlags(A);
+                }
+
+                break;
+            }
+
+        }
+    }
+
+    void setZeroAndNegativeFlags(u8 value)
+    {
+        Z = (value == 0);
+        N = (value & 0b10000000) > 0;
     }
 };
 
@@ -52,5 +101,6 @@ int main()
     MEM mem;
     CPU cpu;
     cpu.reset(mem);
+
     return 0;
 }
