@@ -46,7 +46,7 @@ struct CPU
 
     }
 
-    u8 fetchByte(int& cycle,MEM & memory)
+    u8 fetchByte(u32& cycle,MEM & memory)
     {
         u8 data = memory.Data[PC];
         PC++;
@@ -54,20 +54,31 @@ struct CPU
         return data ;
     }
 
-    u8 readByte(int& cycle,u16 address,MEM& memory)
+    u8 readByte(u32& cycle,u16 address,MEM& memory)
     {
         u8 data = memory.Data[address];
         cycle--;
         return data;
     }
 
-    void writeByte(u8 value, int& cycle, u16 address, MEM& memory)
+    void writeByte(u8 value, u32& cycle, u16 address, MEM& memory)
     {
         memory.Data[address] = value;
         cycle--;
     }
 
-    void execute(int cycles,MEM& memory)
+    //opcodes
+    //LDA
+    static constexpr u8 INSTRUCTION_LDA_IMMEDIATE = 0xA9;
+    static constexpr u8 INSTRUCTION_LDA_ZERO_PAGE = 0xA5;
+    static constexpr u8 INSTRUCTION_LDA_ZERO_PAGE_X = 0xB5;
+    static constexpr u8 INSTRUCTION_LDA_ABSOLUTE = 0xAD;
+    static constexpr u8 INSTRUCTION_LDA_ABSOLUTE_X = 0xBD;
+    static constexpr u8 INSTRUCTION_LDA_ABSOLUTE_Y = 0xB9;
+    static constexpr u8 INSTRUCTION_LDA_INDIRECT_X = 0xA1;
+    static constexpr u8 INSTRUCTION_LDA_INDIRECT_Y = 0xB1;
+
+    void execute(u32& cycles,MEM& memory)
     {
         while(cycles > 0)
         {
@@ -75,7 +86,7 @@ struct CPU
             
             switch (instruction)
             {
-                case 0xA9:
+                case INSTRUCTION_LDA_IMMEDIATE:
                 {
                     u8 value = fetchByte(cycles, memory);
                     A = value;
@@ -103,9 +114,10 @@ int main()
     cpu.reset(mem);
 
     mem.Data[0xFFFC] = 0xA9; // Test program
-    mem.Data[0xFFFD] = 0x42;
+    mem.Data[0xFFFD] = 0x44;
 
-    cpu.execute(2,mem);
+    u32 cycles = 2;
+    cpu.execute(cycles,mem);
 
     printf("Registers\n A = %d, X = %d, Y = %d \n",cpu.A,cpu.X,cpu.Y);
     printf("Flags\n N = %d, Z = %d, C = %d, I = %d, D = %d, V = %d\n",cpu.N,cpu.Z,cpu.I,cpu.D,cpu.V);
