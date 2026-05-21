@@ -93,7 +93,15 @@ struct CPU
 
                     setZeroAndNegativeFlags(A);
                 }
+                
+                case INSTRUCTION_LDA_ZERO_PAGE:
+                {
+                    u8 b8_address = fetchByte(cycles, memory);
+                    u8 value = readByte(cycles, b8_address, memory);
+                    A = value;
 
+                    setZeroAndNegativeFlags(A);
+                }        
                 break;
             }
 
@@ -113,10 +121,11 @@ int main()
     CPU cpu;
     cpu.reset(mem);
 
-    mem.Data[0xFFFC] = 0xA9; // Test program
-    mem.Data[0xFFFD] = 0x44;
+    mem.Data[0x42] = 0x84; // Test program
+    mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ZERO_PAGE; 
+    mem.Data[0xFFFD] = 0x42;
 
-    u32 cycles = 2;
+    u32 cycles = 3;
     cpu.execute(cycles,mem);
 
     printf("Registers\n A = %d, X = %d, Y = %d \n",cpu.A,cpu.X,cpu.Y);
