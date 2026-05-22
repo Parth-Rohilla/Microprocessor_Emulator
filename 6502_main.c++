@@ -67,7 +67,40 @@ struct CPU
         cycle--;
     }
 
+    u16 fetchWord(u32& cycle, MEM& memory)
+    {
+        
+        u8 lowBit = memory.Data[PC];
+        PC++;
+        cycle--;
+
+        
+        u8 highBit = memory.Data[PC];
+        PC++;
+        cycle--;
+        
+        u16 data = (highBit << 8) | lowBit;
+
+        return data ;
+    }
+
+    u16 readWord(u32& cycle, u16 address, MEM& memory)
+    {
+        u8 lowBit = memory.Data[address];
+        cycle--;
+
+        u8 highBit = memory.Data[address + 1];
+        cycle--;
+
+        u16 data = (highBit << 8) | lowBit;
+
+        return data;
+    }
+
+ 
+
     //opcodes
+
     //LDA
     static constexpr u8 INSTRUCTION_LDA_IMMEDIATE = 0xA9;
     static constexpr u8 INSTRUCTION_LDA_ZERO_PAGE = 0xA5;
@@ -77,6 +110,9 @@ struct CPU
     static constexpr u8 INSTRUCTION_LDA_ABSOLUTE_Y = 0xB9;
     static constexpr u8 INSTRUCTION_LDA_INDIRECT_X = 0xA1;
     static constexpr u8 INSTRUCTION_LDA_INDIRECT_Y = 0xB1;
+
+    //JSR
+    static constexpr u8 INSTRUCTION_JSR = 0x20;
 
     void execute(u32& cycles,MEM& memory)
     {
@@ -117,6 +153,11 @@ struct CPU
                     setZeroAndNegativeFlags(A);
                 }
                 break;
+
+                case INSTRUCTION_JSR:
+                {
+                    
+                }
 
                 default:
                 {
