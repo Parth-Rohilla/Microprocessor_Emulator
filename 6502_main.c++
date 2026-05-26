@@ -70,34 +70,44 @@ struct CPU
     u16 fetchWord(u32& cycle, MEM& memory)
     {
         
-        u8 lowBit = memory.Data[PC];
+        u8 lowByte = memory.Data[PC];
         PC++;
         cycle--;
 
         
-        u8 highBit = memory.Data[PC];
+        u8 highByte = memory.Data[PC];
         PC++;
         cycle--;
         
-        u16 data = (highBit << 8) | lowBit;
+        u16 data = (highByte << 8) | lowByte;
 
         return data ;
     }
 
     u16 readWord(u32& cycle, u16 address, MEM& memory)
     {
-        u8 lowBit = memory.Data[address];
+        u8 lowByte = memory.Data[address];
         cycle--;
 
-        u8 highBit = memory.Data[address + 1];
+        u8 highByte = memory.Data[address + 1];
         cycle--;
 
-        u16 data = (highBit << 8) | lowBit;
+        u16 data = (highByte << 8) | lowByte;
 
         return data;
     }
 
- 
+    void writeWord(u8 value, u32& cycles, u16 address, MEM& memory)
+    {
+        u8 lowByteValue = value & 0xFF;  //____ ____ & 0000 1111 -> 0000 ____ -> ____
+        u8 highByteValue = value >> 8; //****  ____ >>8 -> 0000 ____
+
+        memory.Data[address] = lowByteValue;
+        cycles--;
+
+        memory.Data[address + 1] = highByteValue;
+        cycles--;
+    }
 
     //opcodes
 
