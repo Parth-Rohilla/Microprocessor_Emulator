@@ -166,7 +166,7 @@ struct CPU
 
                 case INSTRUCTION_JSR:
                 {
-                    
+                    ;
                 }
 
                 default:
