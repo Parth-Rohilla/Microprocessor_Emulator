@@ -212,29 +212,3 @@ struct CPU
         N = (value & 0b10000000) > 0;
     }
 };
-
-int main()
-{
-    MEM mem;
-    CPU cpu;
-    cpu.reset(mem);
-
-    //program starts
-    mem.Data[0xFFFC] = CPU::INSTRUCTION_JSR; 
-    mem.Data[0xFFFD] = 0x00;
-    mem.Data[0xFFFE] = 0x90;
-
-    //subroutine
-    mem.Data[0x9000] = CPU::INSTRUCTION_LDA_IMMEDIATE;
-    mem.Data[0x9001] = 0x42;
-
-    u32 cycles = 8;
-    cpu.execute(cycles,mem);
-
-    printf("Registers\n A = %d, X = %d, Y = %d \n",cpu.A,cpu.X,cpu.Y);
-    printf("Flags\n N = %d, Z = %d, C = %d, I = %d, D = %d, V = %d\n",cpu.N,cpu.Z,cpu.I,cpu.D,cpu.V);
-    printf("Program counter = %04X\n",cpu.PC);
-    printf("Stack pointer = %04X\n",cpu.SP);
-
-    return 0;
-}
