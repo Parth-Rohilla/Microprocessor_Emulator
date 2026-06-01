@@ -97,7 +97,7 @@ struct CPU
         return data;
     }
 
-    void writeWord(u8 value, u32& cycles, u16 address, MEM& memory)
+    void writeWord(u16 value, u32& cycles, u16 address, MEM& memory)
     {
         u8 lowByteValue = value & 0xFF;  //____ ____ & 0000 1111 -> 0000 ____ -> ____
         u8 highByteValue = value >> 8; //****  ____ >>8 -> 0000 ____
@@ -107,6 +107,21 @@ struct CPU
 
         memory.Data[address + 1] = highByteValue;
         cycles--;
+    }
+
+    void pushByte(u8 value, u32& cycles, MEM& memory)
+    {
+        memory.Data[0x0100 + SP] = value;
+        SP--;
+        cycles--;
+    }
+
+    u8 pullByte(u32& cycles, MEM& memory)
+    {
+        SP++;
+        cycles--;
+
+        return memory.Data[0x0100 + SP];
     }
 
     //opcodes
@@ -166,8 +181,20 @@ struct CPU
 
                 case INSTRUCTION_JSR:
                 {
-                    ;
+                    u16 subAdress = fetchWord(cycles, memory);
+                    u16 returnAdress = PC - 1;
+
+                    u8 lowByte = returnAdress & 0xFF;
+                    u8 highByte = returnAdress >> 8;
+
+                    pushByte(highByte,cycles,memory);
+                    pushByte(lowByte,cycles,memory);
+
+                    PC = subAdress;
+
+                    cycles--;
                 }
+                break;
 
                 default:
                 {
@@ -192,12 +219,16 @@ int main()
     CPU cpu;
     cpu.reset(mem);
 
-    cpu.X = 0x02;  // Test program
-    mem.Data[0x44] = 0x99;
-    mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ZERO_PAGE_X; 
-    mem.Data[0xFFFD] = 0x42;
+    //program starts
+    mem.Data[0xFFFC] = CPU::INSTRUCTION_JSR; 
+    mem.Data[0xFFFD] = 0x00;
+    mem.Data[0xFFFE] = 0x90;
 
-    u32 cycles = 4;
+    //subroutine
+    mem.Data[0x9000] = CPU::INSTRUCTION_LDA_IMMEDIATE;
+    mem.Data[0x9001] = 0x42;
+
+    u32 cycles = 8;
     cpu.execute(cycles,mem);
 
     printf("Registers\n A = %d, X = %d, Y = %d \n",cpu.A,cpu.X,cpu.Y);
