@@ -7,10 +7,18 @@ protected:
     MEM mem;
     CPU cpu;
 
-    void SetUp() override {
+    void SetUp() override
+    {
         cpu.reset(mem);
     }
 };
+
+TEST_F(M6502CPUTest, theCPUDoesNothingWhenWeExecuteZeroCycles)
+{
+    s32 numberOfCycle = 0;
+    s32 cycleUsed = cpu.execute(numberOfCycle, mem);
+    EXPECT_EQ(cycleUsed, 0);
+}
 
 //test for LDA Immediate
 TEST_F(M6502CPUTest, ldaImmediateTest)
@@ -18,7 +26,7 @@ TEST_F(M6502CPUTest, ldaImmediateTest)
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_IMMEDIATE;
     mem.Data[0xFFFD] = 0x42;
 
-    u32 cycles = 2;
+    s32 cycles = 2;
     cpu.execute(cycles, mem);
 
     EXPECT_EQ(cpu.A, 0x42);
@@ -29,7 +37,7 @@ TEST_F(M6502CPUTest, ldaImmediateZeroFlagTest)
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_IMMEDIATE;
     mem.Data[0xFFFD] = 0x00;
 
-    u32 cycles = 2;
+    s32 cycles = 2;
     cpu.execute(cycles, mem);
 
     EXPECT_EQ(cpu.A, 0x00);
@@ -41,7 +49,7 @@ TEST_F(M6502CPUTest, ldaImmediateNegativeFlagTest)
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_IMMEDIATE;
     mem.Data[0xFFFD] = 0xFF;
 
-    u32 cycles = 2;
+    s32 cycles = 2;
     cpu.execute(cycles, mem);
 
     EXPECT_EQ(cpu.A, 0xFF);
@@ -55,7 +63,7 @@ TEST_F(M6502CPUTest, ldaZeroPageTest)
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ZERO_PAGE;
     mem.Data[0xFFFD] = 0x69;
 
-    u32 cycles = 3;
+    s32 cycles = 3;
     cpu.execute(cycles, mem);
 
     EXPECT_EQ(cpu.A, 0x12);
@@ -68,7 +76,7 @@ TEST_F(M6502CPUTest, ldaZeroPageZeroFlagTest)
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ZERO_PAGE;
     mem.Data[0xFFFD] = 0x69;
 
-    u32 cycles = 3;
+    s32 cycles = 3;
     cpu.execute(cycles, mem);
 
     EXPECT_EQ(cpu.A, 0x00);
@@ -81,7 +89,7 @@ TEST_F(M6502CPUTest, ldaZeroPageNegativeFlagTest)
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ZERO_PAGE;
     mem.Data[0xFFFD] = 0x69;
 
-    u32 cycles = 3;
+    s32 cycles = 3;
     cpu.execute(cycles, mem);
 
     EXPECT_EQ(cpu.A, 0xFF);
@@ -96,7 +104,7 @@ TEST_F(M6502CPUTest, ldaZeroPageXWithoutWarppingTest)
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ZERO_PAGE_X;
     mem.Data[0xFFFD] = 0x67;
 
-    u32 cycles = 4;
+    s32 cycles = 4;
     cpu.execute(cycles, mem);
 
     EXPECT_EQ(cpu.A, 0x69);
@@ -109,7 +117,7 @@ TEST_F(M6502CPUTest, ldaZeroPageXWithoutWarppingZeroFlagTest)
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ZERO_PAGE_X;
     mem.Data[0xFFFD] = 0x67;
 
-    u32 cycles = 4;
+    s32 cycles = 4;
     cpu.execute(cycles, mem);
 
     EXPECT_EQ(cpu.A, 0x00);
@@ -123,7 +131,7 @@ TEST_F(M6502CPUTest, ldaZeroPageXWithoutWarppingNegativeFlagTest)
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ZERO_PAGE_X;
     mem.Data[0xFFFD] = 0x67;
 
-    u32 cycles = 4;
+    s32 cycles = 4;
     cpu.execute(cycles, mem);
 
     EXPECT_EQ(cpu.A, 0xFF);
@@ -138,7 +146,7 @@ TEST_F(M6502CPUTest, ldaZeroPageXWithWarppingTest)
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ZERO_PAGE_X;
     mem.Data[0xFFFD] = 0x80;
 
-    u32 cycles = 4;
+    s32 cycles = 4;
     cpu.execute(cycles, mem);
 
     EXPECT_EQ(cpu.A, 0x69);
@@ -151,7 +159,7 @@ TEST_F(M6502CPUTest, ldaZeroPageXWithWarppingZeroFlagTest)
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ZERO_PAGE_X;
     mem.Data[0xFFFD] = 0x80;
 
-    u32 cycles = 4;
+    s32 cycles = 4;
     cpu.execute(cycles, mem);
 
     EXPECT_EQ(cpu.A, 0x00);
@@ -165,7 +173,7 @@ TEST_F(M6502CPUTest, ldaZeroPageXWithWarppingNegativeFlagTest)
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ZERO_PAGE_X;
     mem.Data[0xFFFD] = 0x80;
 
-    u32 cycles = 4;
+    s32 cycles = 4;
     cpu.execute(cycles, mem);
 
     EXPECT_EQ(cpu.A, 0xFF);
@@ -179,7 +187,7 @@ TEST_F(M6502CPUTest, jsrTest)
     mem.Data[0xFFFD] = 0x34;
     mem.Data[0xFFFE] = 0x12;
 
-    u32 cycles = 6;
+    s32 cycles = 6;
     cpu.execute(cycles, mem);
 
     EXPECT_EQ(cpu.PC, 0x1234);

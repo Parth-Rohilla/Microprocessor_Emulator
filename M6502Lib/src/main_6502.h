@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-using u8 = unsigned char ;
-using u16 = unsigned short ;
-using u32 = unsigned int ;
+using u8 = unsigned char;
+using u16 = unsigned short;
+using u32 = unsigned int;
+using s32 = signed int;
 
 struct MEM
 {
@@ -46,58 +47,58 @@ struct CPU
 
     }
 
-    u8 fetchByte(u32& cycle,MEM & memory)
+    u8 fetchByte(s32& cycles,MEM & memory)
     {
         u8 data = memory.Data[PC];
         PC++;
-        cycle--;
+        cycles--;
         return data ;
     }
 
-    u8 readByte(u32& cycle,u16 address,MEM& memory)
+    u8 readByte(s32& cycles,u16 address,MEM& memory)
     {
         u8 data = memory.Data[address];
-        cycle--;
+        cycles--;
         return data;
     }
 
-    void writeByte(u8 value, u32& cycle, u16 address, MEM& memory)
+    void writeByte(u8 value, s32& cycles, u16 address, MEM& memory)
     {
         memory.Data[address] = value;
-        cycle--;
+        cycles--;
     }
 
-    u16 fetchWord(u32& cycle, MEM& memory)
+    u16 fetchWord(s32& cycles, MEM& memory)
     {
         
         u8 lowByte = memory.Data[PC];
         PC++;
-        cycle--;
+        cycles--;
 
         
         u8 highByte = memory.Data[PC];
         PC++;
-        cycle--;
+        cycles--;
         
         u16 data = (highByte << 8) | lowByte;
 
         return data ;
     }
 
-    u16 readWord(u32& cycle, u16 address, MEM& memory)
+    u16 readWord(s32& cycles, u16 address, MEM& memory)
     {
         u8 lowByte = memory.Data[address];
-        cycle--;
+        cycles--;
 
         u8 highByte = memory.Data[address + 1];
-        cycle--;
+        cycles--;
 
         u16 data = (highByte << 8) | lowByte;
 
         return data;
     }
 
-    void writeWord(u16 value, u32& cycles, u16 address, MEM& memory)
+    void writeWord(u16 value, s32& cycles, u16 address, MEM& memory)
     {
         u8 lowByteValue = value & 0xFF;  //____ ____ & 0000 1111 -> 0000 ____ -> ____
         u8 highByteValue = value >> 8; //****  ____ >>8 -> 0000 ____
@@ -109,14 +110,14 @@ struct CPU
         cycles--;
     }
 
-    void pushByte(u8 value, u32& cycles, MEM& memory)
+    void pushByte(u8 value, s32& cycles, MEM& memory)
     {
         memory.Data[0x0100 + SP] = value;
         SP--;
         cycles--;
     }
 
-    u8 pullByte(u32& cycles, MEM& memory)
+    u8 pullByte(s32& cycles, MEM& memory)
     {
         SP++;
         cycles--;
@@ -139,8 +140,9 @@ struct CPU
     //JSR
     static constexpr u8 INSTRUCTION_JSR = 0x20;
 
-    void execute(u32& cycles,MEM& memory)
+    s32 execute(s32& cycles,MEM& memory)
     {
+        const s32 startingCycles = cycles;
         while(cycles > 0)
         {
             u8 instruction = fetchByte(cycles, memory);
@@ -199,11 +201,16 @@ struct CPU
                 default:
                 {
                     printf("Instruction not handeled %d \n",instruction);
+                    cycles = 0;
                 }
                 break;
             }
 
         }
+    
+        const s32 cyclesConsumed = startingCycles - cycles;
+        return cyclesConsumed;
+
     }
 
     void setZeroAndNegativeFlags(u8 value)
