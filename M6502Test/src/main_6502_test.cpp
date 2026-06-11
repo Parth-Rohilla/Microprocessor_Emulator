@@ -216,6 +216,21 @@ TEST_F(M6502CPUTest, ldaZeroPageXWithWarppingNegativeFlagTest)
     EXPECT_TRUE(cpu.N);
 }
 
+//test for LDA absolute addressing 
+TEST_F(M6502CPUTest, ldaAbsoluteTest)
+{
+    mem.Data[0x1234] = 0x69;
+    mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ABSOLUTE;
+    mem.Data[0xFFFD] = 0x34;
+    mem.Data[0xFFFE] = 0x12;
+
+    s32 cycles = 1;
+    cpu.execute(cycles, mem);
+
+    EXPECT_EQ(cpu.A, 0x69);
+
+}
+
 //test for JSR
 TEST_F(M6502CPUTest, jsrTest)
 {

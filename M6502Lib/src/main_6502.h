@@ -180,6 +180,17 @@ struct CPU
                 }
                 break;
 
+                case INSTRUCTION_LDA_ABSOLUTE:
+                {
+                    u16 valueAddress = fetchWord(cycles, memory);
+                    u8 value = readWord(cycles, valueAddress, memory);
+
+                    A = value;
+
+                    setZeroAndNegativeFlags(A);
+                }
+                break;
+
                 case INSTRUCTION_JSR:
                 {
                     u16 subAdress = fetchWord(cycles, memory);
