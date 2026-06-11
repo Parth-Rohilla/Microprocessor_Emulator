@@ -20,11 +20,10 @@ struct MEM
     }
 };
 
-
 struct CPU
 {
-    u16 PC ; // program counter
-    u8 SP ; //stack counter 
+    u16 PC; // program counter
+    u8 SP; //stack counter 
     u8 A; //accumulator
     u8 X; //index resistor X
     u8 Y; //index resister Y
@@ -140,7 +139,7 @@ struct CPU
     //JSR
     static constexpr u8 INSTRUCTION_JSR = 0x20;
 
-    s32 execute(s32& cycles,MEM& memory)
+    s32 execute(s32 cycles,MEM& memory)
     {
         const s32 startingCycles = cycles;
         while(cycles > 0)

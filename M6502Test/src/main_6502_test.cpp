@@ -13,11 +13,24 @@ protected:
     }
 };
 
+//test for when cycle is 0
 TEST_F(M6502CPUTest, theCPUDoesNothingWhenWeExecuteZeroCycles)
 {
-    s32 numberOfCycle = 0;
+    constexpr s32 numberOfCycle = 0;
     s32 cycleUsed = cpu.execute(numberOfCycle, mem);
     EXPECT_EQ(cycleUsed, 0);
+}
+
+//test when the instruction is need more cycle then which is given by the user to complete the instruction. 
+//removes the need to calculate the cpu cycle before hand which is cpu's job.
+TEST_F(M6502CPUTest, theCPUCanExecuteMoreCyclesThanRequestedIfRequiredByTheInstruction)
+{
+    mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_IMMEDIATE;
+    mem.Data[0xFFFD] = 0x84;
+
+    s32 cyclesUsed = cpu.execute(1, mem);
+
+    EXPECT_EQ(cyclesUsed, 2);
 }
 
 //test for LDA Immediate
