@@ -46,6 +46,16 @@ TEST_F(M6502CPUTest, executingABadInstructionDoesNotPutUsInAnInfiniteLoopTest)
     EXPECT_EQ(CyclesUsed, NUM_CYCLES);
 }
 
+//test that the PC is incremented afetr a even "bad" instruction
+TEST_F(M6502CPUTest, badInstructionAdvancesProgramCounterTest)
+{
+    mem.Data[0xFFFC] = 0x00;
+
+    cpu.execute(1, mem);
+
+    EXPECT_EQ(cpu.PC, 0xFFFD);
+}
+
 //test for LDA Immediate
 TEST_F(M6502CPUTest, ldaImmediateTest)
 {
