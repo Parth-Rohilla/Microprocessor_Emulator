@@ -224,11 +224,11 @@ TEST_F(M6502CPUTest, ldaAbsoluteTest)
     mem.Data[0xFFFD] = 0x34;
     mem.Data[0xFFFE] = 0x12;
 
-    s32 cycles = 1;
-    cpu.execute(cycles, mem);
+    s32 cycles = 4;
+    s32 cyclesUsed = cpu.execute(cycles, mem);
 
     EXPECT_EQ(cpu.A, 0x69);
-
+    EXPECT_EQ(cyclesUsed, 4);
 }
 
 //test for JSR

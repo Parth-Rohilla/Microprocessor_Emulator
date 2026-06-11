@@ -183,7 +183,7 @@ struct CPU
                 case INSTRUCTION_LDA_ABSOLUTE:
                 {
                     u16 valueAddress = fetchWord(cycles, memory);
-                    u8 value = readWord(cycles, valueAddress, memory);
+                    u8 value = readByte(cycles, valueAddress, memory);
 
                     A = value;
 
