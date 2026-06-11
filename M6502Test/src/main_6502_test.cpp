@@ -14,7 +14,7 @@ protected:
 };
 
 //test for when cycle is 0
-TEST_F(M6502CPUTest, theCPUDoesNothingWhenWeExecuteZeroCycles)
+TEST_F(M6502CPUTest, theCPUDoesNothingWhenWeExecuteZeroCyclesTest)
 {
     constexpr s32 numberOfCycle = 0;
     s32 cycleUsed = cpu.execute(numberOfCycle, mem);
@@ -23,7 +23,7 @@ TEST_F(M6502CPUTest, theCPUDoesNothingWhenWeExecuteZeroCycles)
 
 //test when the instruction is need more cycle then which is given by the user to complete the instruction. 
 //removes the need to calculate the cpu cycle before hand which is cpu's job.
-TEST_F(M6502CPUTest, theCPUCanExecuteMoreCyclesThanRequestedIfRequiredByTheInstruction)
+TEST_F(M6502CPUTest, theCPUCanExecuteMoreCyclesThanRequestedIfRequiredByTheInstructionTest)
 {
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_IMMEDIATE;
     mem.Data[0xFFFD] = 0x84;
@@ -31,6 +31,19 @@ TEST_F(M6502CPUTest, theCPUCanExecuteMoreCyclesThanRequestedIfRequiredByTheInstr
     s32 cyclesUsed = cpu.execute(1, mem);
 
     EXPECT_EQ(cyclesUsed, 2);
+}
+
+//see if the cpu can handle the unknown opcode or instructions
+TEST_F(M6502CPUTest, executingABadInstructionDoesNotPutUsInAnInfiniteLoopTest)
+{
+    mem.Data[0xFFFC] = 0x00;
+    mem.Data[0xFFFD] = 0x00;
+
+    constexpr s32 NUM_CYCLES = 1;
+
+    s32 CyclesUsed = cpu.execute(NUM_CYCLES, mem);
+
+    EXPECT_EQ(CyclesUsed, NUM_CYCLES);
 }
 
 //test for LDA Immediate
