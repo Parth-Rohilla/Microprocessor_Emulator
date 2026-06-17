@@ -216,7 +216,7 @@ TEST_F(M6502CPUTest, ldaZeroPageXWithWarppingNegativeFlagTest)
     EXPECT_TRUE(cpu.N);
 }
 
-//test for LDA absolute addressing 
+//test for LDA ABSOLUTE addressing 
 TEST_F(M6502CPUTest, ldaAbsoluteTest)
 {
     mem.Data[0x1234] = 0x69;
@@ -229,6 +229,44 @@ TEST_F(M6502CPUTest, ldaAbsoluteTest)
 
     EXPECT_EQ(cpu.A, 0x69);
     EXPECT_EQ(cyclesUsed, 4);
+}
+
+//test for LDA ABSOLUTE X 
+//without page crossed (4 cycle)
+TEST_F(M6502CPUTest, ldaAbsoluteXCanLoadValueInAccumulatorTest)
+{
+    cpu.X = 0x01;
+    mem.Data[0x1235] = 0x69;
+    mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ABSOLUTE_X;
+    mem.Data[0xFFFD] = 0x34;
+    mem.Data[0xFFFE] = 0x12; //0x1234
+
+    s32 cycles = 4;
+    s32 cyclesUsed = cpu.execute(cycles, mem);
+
+    EXPECT_EQ(cpu.A, 0x69);
+    EXPECT_EQ(cyclesUsed, 4);
+    EXPECT_EQ(cpu.PC, 0xFFFF);
+    EXPECT_FALSE(cpu.Z);
+    EXPECT_FALSE(cpu.N);
+}
+
+//with page crossed (4+1 cycles)
+TEST_F(M6502CPUTest, ldaAbsoluteXCanLoadValueInAccumulatorPageCrossedTest)
+{
+    cpu.X = 0x01;
+    mem.Data[0x1300] = 0x69;
+    mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ABSOLUTE_X;
+    mem.Data[0xFFFD] = 0xFF;
+    mem.Data[0xFFFE] = 0x12; //0x12FF + X(0x01) = 0x1300 (page crossed)
+    s32 cycles = 5;
+    s32 cyclesUsed = cpu.execute(cycles, mem);
+
+    EXPECT_EQ(cpu.A, 0x69);
+    EXPECT_EQ(cyclesUsed, 5);
+    EXPECT_EQ(cpu.PC, 0xFFFF);
+    EXPECT_FALSE(cpu.Z);
+    EXPECT_FALSE(cpu.N);
 }
 
 //test for JSR

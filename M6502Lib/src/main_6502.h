@@ -46,7 +46,7 @@ struct CPU
 
     }
 
-    u8 fetchByte(s32& cycles,MEM & memory)
+    u8 fetchByte(s32& cycles,MEM& memory)
     {
         u8 data = memory.Data[PC];
         PC++;
@@ -184,6 +184,25 @@ struct CPU
                 {
                     u16 valueAddress = fetchWord(cycles, memory);
                     u8 value = readByte(cycles, valueAddress, memory);
+
+                    A = value;
+
+                    setZeroAndNegativeFlags(A);
+                }
+                break;
+
+                case INSTRUCTION_LDA_ABSOLUTE_X:
+                {
+                    u16 baseAddress = fetchWord(cycles, memory);
+                    u16 effectiveAddress = X + baseAddress;
+
+                    bool pageCrossed = (baseAddress & 0xFF00) != (effectiveAddress & 0xFF00); // LDA Absolute,X takes an extra cycle if page boundary is crossed
+                    if (pageCrossed)
+                    {
+                        cycles--;
+                    }
+                    
+                    u8 value = readByte(cycles, effectiveAddress, memory);
 
                     A = value;
 
