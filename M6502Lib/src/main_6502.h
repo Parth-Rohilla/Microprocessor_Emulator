@@ -210,6 +210,25 @@ struct CPU
                 }
                 break;
 
+                case INSTRUCTION_LDA_ABSOLUTE_Y:
+                {
+                    u16 baseAddress = fetchWord(cycles, memory);
+                    u16 effectiveAddress = baseAddress + Y;
+
+                    bool pageCrossed = (baseAddress & 0xFF00) != (effectiveAddress & 0xFF00); // LDA Absolute,Y takes an extra cycle if page boundary is crossed
+                    if (pageCrossed)
+                    {
+                        cycles--;
+                    }
+                    
+                    u8 value = readByte(cycles, effectiveAddress, memory);
+
+                    A = value;
+
+                    setZeroAndNegativeFlags(A);
+                }
+                break;
+
                 case INSTRUCTION_JSR:
                 {
                     u16 subAdress = fetchWord(cycles, memory);
