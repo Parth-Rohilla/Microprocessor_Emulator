@@ -330,6 +330,50 @@ TEST_F(M6502CPUTest, ldaIndirectXCanLoadValueInAccumulatorTest)
 
 }
 
+//test for LDA INDIRECT Y
+
+//test for LDA INDIRECT Y without page crossing
+TEST_F(M6502CPUTest, ldaIndirectYWithoutPageCrossingCanLoadValueInAccumulatorTest)
+{
+    cpu.Y = 0x4;
+    mem.Data[0x40] = 0x00;
+    mem.Data[0x41] = 0x80; 
+    mem.Data[0x8004] = 0x69;
+    mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_INDIRECT_Y;
+    mem.Data[0xFFFD] = 0x40;
+
+    s32 cycles = 5;
+    s32 cyclesUsed = cpu.execute(cycles, mem);
+
+    EXPECT_EQ(cpu.A, 0x69);
+    EXPECT_EQ(cyclesUsed, 5);
+    EXPECT_EQ(cpu.PC, 0xFFFE);
+    EXPECT_FALSE(cpu.Z);
+    EXPECT_FALSE(cpu.N);
+
+}
+
+//test for LDA INDIRECT Y with page crossing
+TEST_F(M6502CPUTest, ldaIndirectYWithPageCrossingCanLoadValueInAccumulatorTest)
+{
+    cpu.Y = 0x4;
+    mem.Data[0x40] = 0xFF;
+    mem.Data[0x41] = 0x08; //0x08FF ->0x08FF + 0x04 -> 0x0903
+    mem.Data[0x0903] = 0x69;
+    mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_INDIRECT_Y;
+    mem.Data[0xFFFD] = 0x40;
+
+    s32 cycles = 6;
+    s32 cyclesUsed = cpu.execute(cycles, mem);
+
+    EXPECT_EQ(cpu.A, 0x69);
+    EXPECT_EQ(cyclesUsed, 6);
+    EXPECT_EQ(cpu.PC, 0xFFFE);
+    EXPECT_FALSE(cpu.Z);
+    EXPECT_FALSE(cpu.N);
+
+}
+
 //test for JSR
 TEST_F(M6502CPUTest, jsrTest)
 {

@@ -243,6 +243,27 @@ struct CPU
                 }
                 break;
 
+                case INSTRUCTION_LDA_INDIRECT_Y:
+                {
+                    u8 oprand = fetchByte(cycles, memory);
+                    u16 baseAdress = readWord(cycles, oprand, memory);
+                    u16 effectiveAdress = baseAdress + Y;
+                    
+                    bool pageCrosed = (effectiveAdress & 0xFF00) != (baseAdress & 0xFF00);
+                    if (pageCrosed)
+                    {
+                        cycles--;
+                    }
+                    
+                    u8 value = readByte(cycles, effectiveAdress, memory);
+
+                    A = value;
+
+                    setZeroAndNegativeFlags(A);
+                    
+                }
+                break;
+
                 case INSTRUCTION_JSR:
                 {
                     u16 subAdress = fetchWord(cycles, memory);
