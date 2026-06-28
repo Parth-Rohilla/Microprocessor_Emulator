@@ -324,7 +324,7 @@ TEST_F(M6502CPUTest, ldaIndirectXCanLoadValueInAccumulatorTest)
 
     EXPECT_EQ(cpu.A, 0x69);
     EXPECT_EQ(cyclesUsed, 6);
-    EXPECT_EQ(cpu.PC, 0xFFFF);
+    EXPECT_EQ(cpu.PC, 0xFFFE);
     EXPECT_FALSE(cpu.Z);
     EXPECT_FALSE(cpu.N);
 
