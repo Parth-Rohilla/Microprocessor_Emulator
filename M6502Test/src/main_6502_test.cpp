@@ -3,19 +3,25 @@
 
 class M6502CPUTest : public testing::Test 
 {
-protected:
-    MEM mem;
-    CPU cpu;
+public:
+    m6502::MEM mem;
+    m6502::CPU cpu;
 
-    void SetUp() override
+    virtual void SetUp() 
     {
         cpu.reset(mem);
+    }
+
+    virtual void TearDown()
+    {
     }
 };
 
 //test for when cycle is 0
 TEST_F(M6502CPUTest, theCPUDoesNothingWhenWeExecuteZeroCyclesTest)
 {
+    using namespace m6502;
+
     constexpr s32 numberOfCycle = 0;
     s32 cycleUsed = cpu.execute(numberOfCycle, mem);
     EXPECT_EQ(cycleUsed, 0);
@@ -25,6 +31,8 @@ TEST_F(M6502CPUTest, theCPUDoesNothingWhenWeExecuteZeroCyclesTest)
 //removes the need to calculate the cpu cycle before hand which is cpu's job.
 TEST_F(M6502CPUTest, theCPUCanExecuteMoreCyclesThanRequestedIfRequiredByTheInstructionTest)
 {
+    using namespace m6502;
+
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_IMMEDIATE;
     mem.Data[0xFFFD] = 0x84;
 
@@ -36,6 +44,8 @@ TEST_F(M6502CPUTest, theCPUCanExecuteMoreCyclesThanRequestedIfRequiredByTheInstr
 //see if the cpu can handle the unknown opcode or instructions
 TEST_F(M6502CPUTest, executingABadInstructionDoesNotPutUsInAnInfiniteLoopTest)
 {
+    using namespace m6502;
+
     mem.Data[0xFFFC] = 0x00;
     mem.Data[0xFFFD] = 0x00;
 
@@ -49,6 +59,8 @@ TEST_F(M6502CPUTest, executingABadInstructionDoesNotPutUsInAnInfiniteLoopTest)
 //test that the PC is incremented afetr a even "bad" instruction
 TEST_F(M6502CPUTest, badInstructionAdvancesProgramCounterTest)
 {
+    using namespace m6502;
+
     mem.Data[0xFFFC] = 0x00;
 
     cpu.execute(1, mem);
@@ -59,6 +71,8 @@ TEST_F(M6502CPUTest, badInstructionAdvancesProgramCounterTest)
 //test for LDA Immediate
 TEST_F(M6502CPUTest, ldaImmediateTest)
 {
+    using namespace m6502;
+
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_IMMEDIATE;
     mem.Data[0xFFFD] = 0x42;
 
@@ -70,6 +84,8 @@ TEST_F(M6502CPUTest, ldaImmediateTest)
 
 TEST_F(M6502CPUTest, ldaImmediateZeroFlagTest)
 {
+    using namespace m6502;
+
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_IMMEDIATE;
     mem.Data[0xFFFD] = 0x00;
 
@@ -82,6 +98,8 @@ TEST_F(M6502CPUTest, ldaImmediateZeroFlagTest)
 
 TEST_F(M6502CPUTest, ldaImmediateNegativeFlagTest)
 {
+    using namespace m6502;
+
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_IMMEDIATE;
     mem.Data[0xFFFD] = 0xFF;
 
@@ -95,6 +113,8 @@ TEST_F(M6502CPUTest, ldaImmediateNegativeFlagTest)
 //test for LDA ZERO PAGE 
 TEST_F(M6502CPUTest, ldaZeroPageTest)
 {
+    using namespace m6502;
+
     mem.Data[0x0069] = 0x12;
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ZERO_PAGE;
     mem.Data[0xFFFD] = 0x69;
@@ -108,6 +128,8 @@ TEST_F(M6502CPUTest, ldaZeroPageTest)
 
 TEST_F(M6502CPUTest, ldaZeroPageZeroFlagTest)
 {
+    using namespace m6502;
+
     mem.Data[0x0069] = 0x00;
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ZERO_PAGE;
     mem.Data[0xFFFD] = 0x69;
@@ -121,6 +143,8 @@ TEST_F(M6502CPUTest, ldaZeroPageZeroFlagTest)
 
 TEST_F(M6502CPUTest, ldaZeroPageNegativeFlagTest)
 {
+    using namespace m6502;
+
     mem.Data[0x0069] = 0xFF;
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ZERO_PAGE;
     mem.Data[0xFFFD] = 0x69;
@@ -135,6 +159,8 @@ TEST_F(M6502CPUTest, ldaZeroPageNegativeFlagTest)
 // test for ZERO PAGE X without warpping
 TEST_F(M6502CPUTest, ldaZeroPageXWithoutWarppingTest)
 {
+    using namespace m6502;
+
     cpu.X = 0x01;
     mem.Data[0x0068] = 0x69; 
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ZERO_PAGE_X;
@@ -148,6 +174,8 @@ TEST_F(M6502CPUTest, ldaZeroPageXWithoutWarppingTest)
 
 TEST_F(M6502CPUTest, ldaZeroPageXWithoutWarppingZeroFlagTest)
 {
+    using namespace m6502;
+
     cpu.X = 0x01;
     mem.Data[0x0068] = 0x00; 
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ZERO_PAGE_X;
@@ -162,6 +190,8 @@ TEST_F(M6502CPUTest, ldaZeroPageXWithoutWarppingZeroFlagTest)
 
 TEST_F(M6502CPUTest, ldaZeroPageXWithoutWarppingNegativeFlagTest)
 {
+    using namespace m6502;
+
     cpu.X = 0x01;
     mem.Data[0x0068] = 0xFF; 
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ZERO_PAGE_X;
@@ -177,6 +207,8 @@ TEST_F(M6502CPUTest, ldaZeroPageXWithoutWarppingNegativeFlagTest)
 // test for ZERO PAGE X with warpping
 TEST_F(M6502CPUTest, ldaZeroPageXWithWarppingTest)
 {
+    using namespace m6502;
+
     cpu.X = 0xFF;
     mem.Data[0x007F] = 0x69; 
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ZERO_PAGE_X;
@@ -190,6 +222,8 @@ TEST_F(M6502CPUTest, ldaZeroPageXWithWarppingTest)
 
 TEST_F(M6502CPUTest, ldaZeroPageXWithWarppingZeroFlagTest)
 {
+    using namespace m6502;
+
     cpu.X = 0xFF;
     mem.Data[0x007F] = 0x00; 
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ZERO_PAGE_X;
@@ -204,6 +238,8 @@ TEST_F(M6502CPUTest, ldaZeroPageXWithWarppingZeroFlagTest)
 
 TEST_F(M6502CPUTest, ldaZeroPageXWithWarppingNegativeFlagTest)
 {
+    using namespace m6502;
+
     cpu.X = 0xFF;
     mem.Data[0x007F] = 0xFF; 
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ZERO_PAGE_X;
@@ -219,6 +255,8 @@ TEST_F(M6502CPUTest, ldaZeroPageXWithWarppingNegativeFlagTest)
 //test for LDA ABSOLUTE addressing 
 TEST_F(M6502CPUTest, ldaAbsoluteTest)
 {
+    using namespace m6502;
+
     mem.Data[0x1234] = 0x69;
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ABSOLUTE;
     mem.Data[0xFFFD] = 0x34;
@@ -235,6 +273,8 @@ TEST_F(M6502CPUTest, ldaAbsoluteTest)
 //without page crossed (4 cycle)
 TEST_F(M6502CPUTest, ldaAbsoluteXCanLoadValueInAccumulatorTest)
 {
+    using namespace m6502;
+
     cpu.X = 0x01;
     mem.Data[0x1235] = 0x69;
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ABSOLUTE_X;
@@ -254,6 +294,8 @@ TEST_F(M6502CPUTest, ldaAbsoluteXCanLoadValueInAccumulatorTest)
 //with page crossed (4+1 cycles)
 TEST_F(M6502CPUTest, ldaAbsoluteXCanLoadValueInAccumulatorPageCrossedTest)
 {
+    using namespace m6502;
+
     cpu.X = 0x01;
     mem.Data[0x1300] = 0x69;
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ABSOLUTE_X;
@@ -274,6 +316,8 @@ TEST_F(M6502CPUTest, ldaAbsoluteXCanLoadValueInAccumulatorPageCrossedTest)
 //without page crossed (4 cycle)
 TEST_F(M6502CPUTest, ldaAbsoluteYCanLoadValueInAccumulatorTest)
 {
+    using namespace m6502;
+
     cpu.Y = 0x01;
     mem.Data[0x1235] = 0x69;
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ABSOLUTE_Y;
@@ -293,6 +337,8 @@ TEST_F(M6502CPUTest, ldaAbsoluteYCanLoadValueInAccumulatorTest)
 //with page crossed (4+1 cycles)
 TEST_F(M6502CPUTest, ldaAbsoluteYCanLoadValueInAccumulatorPageCrossedTest)
 {
+    using namespace m6502;
+
     cpu.Y = 0x01;
     mem.Data[0x1300] = 0x69;
     mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ABSOLUTE_Y;
@@ -312,6 +358,8 @@ TEST_F(M6502CPUTest, ldaAbsoluteYCanLoadValueInAccumulatorPageCrossedTest)
 //test for LDA INDIRECT X
 TEST_F(M6502CPUTest, ldaIndirectXCanLoadValueInAccumulatorTest)
 {
+    using namespace m6502;
+
     cpu.X = 0x4;
     mem.Data[0x44] = 0x00;
     mem.Data[0x45] = 0x80;
@@ -335,6 +383,8 @@ TEST_F(M6502CPUTest, ldaIndirectXCanLoadValueInAccumulatorTest)
 //test for LDA INDIRECT Y without page crossing
 TEST_F(M6502CPUTest, ldaIndirectYWithoutPageCrossingCanLoadValueInAccumulatorTest)
 {
+    using namespace m6502;
+
     cpu.Y = 0x4;
     mem.Data[0x40] = 0x00;
     mem.Data[0x41] = 0x80; 
@@ -356,6 +406,8 @@ TEST_F(M6502CPUTest, ldaIndirectYWithoutPageCrossingCanLoadValueInAccumulatorTes
 //test for LDA INDIRECT Y with page crossing
 TEST_F(M6502CPUTest, ldaIndirectYWithPageCrossingCanLoadValueInAccumulatorTest)
 {
+    using namespace m6502;
+
     cpu.Y = 0x4;
     mem.Data[0x40] = 0xFF;
     mem.Data[0x41] = 0x08; //0x08FF ->0x08FF + 0x04 -> 0x0903
@@ -377,6 +429,8 @@ TEST_F(M6502CPUTest, ldaIndirectYWithPageCrossingCanLoadValueInAccumulatorTest)
 //test for JSR
 TEST_F(M6502CPUTest, jsrTest)
 {
+    using namespace m6502;
+
     mem.Data[0xFFFC] = CPU::INSTRUCTION_JSR;
     mem.Data[0xFFFD] = 0x34;
     mem.Data[0xFFFE] = 0x12;

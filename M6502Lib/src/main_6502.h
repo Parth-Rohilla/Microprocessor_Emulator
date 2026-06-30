@@ -1,12 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-using u8 = unsigned char;
-using u16 = unsigned short;
-using u32 = unsigned int;
-using s32 = signed int;
+namespace m6502
+{
 
-struct MEM
+    using u8 = unsigned char;
+    using u16 = unsigned short;
+    using u32 = unsigned int;
+    using s32 = signed int;
+
+    struct MEM;
+    struct CPU;
+
+}
+
+struct m6502::MEM
 {
     static constexpr u32 MAX_MEM = 1024*64;
     u8 Data[MAX_MEM];
@@ -20,7 +28,7 @@ struct MEM
     }
 };
 
-struct CPU
+struct m6502::CPU
 {
     u16 PC; // program counter
     u8 SP; //stack counter 
