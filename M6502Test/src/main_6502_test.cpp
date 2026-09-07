@@ -15,7 +15,47 @@ public:
     virtual void TearDown()
     {
     }
+
+    void TestLoadRegisterImmediate(
+        m6502::u8 Opcode,
+        m6502::u8 m6502::CPU::*Register
+    );
+
+    void VerifyUnmodifiedFlagsFromLDA(
+        m6502::CPU& CPU,
+        m6502::CPU& CPUCopy
+    );
+  
 };
+
+// Flag testser
+void M6502CPUTest::VerifyUnmodifiedFlagsFromLDA(m6502::CPU& CPU, m6502::CPU& CPUCopy)
+{
+    EXPECT_EQ(CPU.C, CPUCopy.C);
+    EXPECT_EQ(CPU.V, CPUCopy.V);
+}
+
+  
+void M6502CPUTest::TestLoadRegisterImmediate(m6502::u8 opcodeToTest, m6502::u8 m6502::CPU::*registerToTest)
+{
+    using namespace m6502;
+
+    // given:
+    mem.Data[0xFFFC] = opcodeToTest;
+    mem.Data[0xFFFD] = 0x84;
+
+    // when:
+    CPU CPUCopy = cpu;
+    s32 CyclesUsed = cpu.execute(2, mem);
+
+    // then:
+    EXPECT_EQ(cpu.*registerToTest, 0x84);
+    EXPECT_EQ(CyclesUsed, 2);
+    EXPECT_FALSE(cpu.Z);
+    EXPECT_TRUE(cpu.N);
+    VerifyUnmodifiedFlagsFromLDA(cpu, CPUCopy);
+}
+
 
 //test for when cycle is 0
 TEST_F(M6502CPUTest, theCPUDoesNothingWhenWeExecuteZeroCyclesTest)
@@ -73,13 +113,7 @@ TEST_F(M6502CPUTest, ldaImmediateTest)
 {
     using namespace m6502;
 
-    mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_IMMEDIATE;
-    mem.Data[0xFFFD] = 0x42;
-
-    s32 cycles = 2;
-    cpu.execute(cycles, mem);
-
-    EXPECT_EQ(cpu.A, 0x42);
+    TestLoadRegisterImmediate( CPU::INSTRUCTION_LDA_IMMEDIATE, &CPU::A);
 }
 
 TEST_F(M6502CPUTest, ldaImmediateZeroFlagTest)
@@ -424,6 +458,22 @@ TEST_F(M6502CPUTest, ldaIndirectYWithPageCrossingCanLoadValueInAccumulatorTest)
     EXPECT_FALSE(cpu.Z);
     EXPECT_FALSE(cpu.N);
 
+}
+
+// LDX
+TEST_F(M6502CPUTest, ldxImmediateCanLoadValueIntoTheRegister)
+{
+    using namespace m6502;
+
+    TestLoadRegisterImmediate(CPU::INSTRUCTION_LDX_IMMEDIATE, &CPU::X);
+}
+
+// LDY
+TEST_F(M6502CPUTest, ldyImmediateCanLoadValueIntoTheRegister)
+{
+    using namespace m6502;
+
+    TestLoadRegisterImmediate(CPU::INSTRUCTION_LDY_IMMEDIATE, &CPU::Y);
 }
 
 //test for JSR

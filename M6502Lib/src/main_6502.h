@@ -3,10 +3,10 @@
 namespace m6502
 {
 
-    using u8 = unsigned char;
-    using u16 = unsigned short;
-    using u32 = unsigned int;
-    using s32 = signed int;
+    using u8 = unsigned char; // 8bit = byte
+    using u16 = unsigned short; // 16bit = 2byte = word
+    using u32 = unsigned int; // 32bit = 4byte (unsigned)
+    using s32 = signed int; // 32bit = 4byte (signed)
 
     struct MEM;
     struct CPU;
@@ -142,6 +142,12 @@ struct m6502::CPU
     static constexpr u8 INSTRUCTION_LDA_ABSOLUTE_Y = 0xB9;
     static constexpr u8 INSTRUCTION_LDA_INDIRECT_X = 0xA1;
     static constexpr u8 INSTRUCTION_LDA_INDIRECT_Y = 0xB1;
+
+    //LDX
+    static constexpr u8 INSTRUCTION_LDX_IMMEDIATE = 0xA2;
+
+    //LDY
+    static constexpr u8 INSTRUCTION_LDY_IMMEDIATE = 0xA0;
 
     //JSR
     static constexpr u8 INSTRUCTION_JSR = 0x20;
