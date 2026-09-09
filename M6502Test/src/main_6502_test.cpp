@@ -16,15 +16,11 @@ public:
     {
     }
 
-    void TestLoadRegisterImmediate(
-        m6502::u8 Opcode,
-        m6502::u8 m6502::CPU::*Register
-    );
+    void TestLoadRegisterImmediate( m6502::u8 Opcode, m6502::u8 m6502::CPU::*Register);
 
-    void VerifyUnmodifiedFlagsFromLDA(
-        m6502::CPU& CPU,
-        m6502::CPU& CPUCopy
-    );
+    void VerifyUnmodifiedFlagsFromLDA( m6502::CPU& CPU, m6502::CPU& CPUCopy);
+
+    void TestLoadRegisterZeroPage( m6502::u8 Opcode, m6502::u8 m6502::CPU::*Register);
   
 };
 
@@ -54,6 +50,25 @@ void M6502CPUTest::TestLoadRegisterImmediate(m6502::u8 opcodeToTest, m6502::u8 m
     EXPECT_FALSE(cpu.Z);
     EXPECT_TRUE(cpu.N);
     VerifyUnmodifiedFlagsFromLDA(cpu, CPUCopy);
+}
+
+void M6502CPUTest::TestLoadRegisterZeroPage(m6502::u8 opcodeToTest, m6502::u8 m6502::CPU::*registerToTest)
+{
+    using namespace m6502;
+
+    mem.Data[0x69] = 0x12;
+    mem.Data[0xFFFC] = opcodeToTest;
+    mem.Data[0xFFFD] = 0x69;
+
+    CPU CPUCopy = cpu;
+    s32 CyclesUsed = cpu.execute(3, mem);
+
+    EXPECT_EQ(cpu.*registerToTest, 0x12);
+    EXPECT_EQ(CyclesUsed, 3);
+    EXPECT_FALSE(cpu.Z);
+    EXPECT_FALSE(cpu.N);
+    VerifyUnmodifiedFlagsFromLDA(cpu, CPUCopy);
+
 }
 
 
@@ -149,14 +164,7 @@ TEST_F(M6502CPUTest, ldaZeroPageTest)
 {
     using namespace m6502;
 
-    mem.Data[0x0069] = 0x12;
-    mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ZERO_PAGE;
-    mem.Data[0xFFFD] = 0x69;
-
-    s32 cycles = 3;
-    cpu.execute(cycles, mem);
-
-    EXPECT_EQ(cpu.A, 0x12);
+    TestLoadRegisterZeroPage(CPU::INSTRUCTION_LDA_ZERO_PAGE, &CPU::A);
 }
 
 
