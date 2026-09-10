@@ -22,6 +22,9 @@ public:
 
     void TestLoadRegisterZeroPage( m6502::u8 Opcode, m6502::u8 m6502::CPU::*Register);
   
+    void TestLoadRegisterZeroPageX( m6502::u8 opcodeToTest, m6502::u8 m6502::CPU::*registerToTest);
+
+    void TestLoadRegisterZeroPageY( m6502::u8 opcodeToTest, m6502::u8 m6502::CPU::*registerToTest);
 };
 
 // Flag testser
@@ -71,6 +74,50 @@ void M6502CPUTest::TestLoadRegisterZeroPage(m6502::u8 opcodeToTest, m6502::u8 m6
 
 }
 
+void M6502CPUTest::TestLoadRegisterZeroPageX( m6502::u8 opcodeToTest, m6502::u8 m6502::CPU::*registerToTest)
+{
+    using namespace m6502;
+
+    cpu.X = 0x01;
+
+    mem.Data[0x0068] = 0x69;
+    mem.Data[0xFFFC] = opcodeToTest;
+    mem.Data[0xFFFD] = 0x67;
+
+    CPU CPUCopy = cpu;
+
+    s32 CyclesUsed = cpu.execute(4, mem);
+
+    EXPECT_EQ(cpu.*registerToTest, 0x69);
+    EXPECT_EQ(CyclesUsed, 4);
+    EXPECT_FALSE(cpu.Z);
+    EXPECT_FALSE(cpu.N);
+
+    VerifyUnmodifiedFlagsFromLDA(cpu, CPUCopy);
+}
+
+void M6502CPUTest::TestLoadRegisterZeroPageY( m6502::u8 opcodeToTest, m6502::u8 m6502::CPU::*registerToTest)
+{
+    using namespace m6502;
+
+    cpu.Y = 0x01;
+
+    mem.Data[0x0068] = 0x69;
+
+    mem.Data[0xFFFC] = opcodeToTest;
+    mem.Data[0xFFFD] = 0x67;
+
+    CPU CPUCopy = cpu;
+
+    s32 CyclesUsed = cpu.execute(4, mem);
+
+    EXPECT_EQ(cpu.*registerToTest, 0x69);
+    EXPECT_EQ(CyclesUsed, 4);
+    EXPECT_FALSE(cpu.Z);
+    EXPECT_FALSE(cpu.N);
+
+    VerifyUnmodifiedFlagsFromLDA(cpu, CPUCopy);
+}
 
 //test for when cycle is 0
 TEST_F(M6502CPUTest, theCPUDoesNothingWhenWeExecuteZeroCyclesTest)
@@ -198,100 +245,11 @@ TEST_F(M6502CPUTest, ldaZeroPageNegativeFlagTest)
     EXPECT_TRUE(cpu.N);
 }
 
-// test for ZERO PAGE X without warpping
-TEST_F(M6502CPUTest, ldaZeroPageXWithoutWarppingTest)
+TEST_F(M6502CPUTest, ldaZeroPageXWithoutWrappingTest)
 {
     using namespace m6502;
 
-    cpu.X = 0x01;
-    mem.Data[0x0068] = 0x69; 
-    mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ZERO_PAGE_X;
-    mem.Data[0xFFFD] = 0x67;
-
-    s32 cycles = 4;
-    cpu.execute(cycles, mem);
-
-    EXPECT_EQ(cpu.A, 0x69);
-}
-
-TEST_F(M6502CPUTest, ldaZeroPageXWithoutWarppingZeroFlagTest)
-{
-    using namespace m6502;
-
-    cpu.X = 0x01;
-    mem.Data[0x0068] = 0x00; 
-    mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ZERO_PAGE_X;
-    mem.Data[0xFFFD] = 0x67;
-
-    s32 cycles = 4;
-    cpu.execute(cycles, mem);
-
-    EXPECT_EQ(cpu.A, 0x00);
-    EXPECT_TRUE(cpu.Z);
-}
-
-TEST_F(M6502CPUTest, ldaZeroPageXWithoutWarppingNegativeFlagTest)
-{
-    using namespace m6502;
-
-    cpu.X = 0x01;
-    mem.Data[0x0068] = 0xFF; 
-    mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ZERO_PAGE_X;
-    mem.Data[0xFFFD] = 0x67;
-
-    s32 cycles = 4;
-    cpu.execute(cycles, mem);
-
-    EXPECT_EQ(cpu.A, 0xFF);
-    EXPECT_TRUE(cpu.N);
-}
-
-// test for ZERO PAGE X with warpping
-TEST_F(M6502CPUTest, ldaZeroPageXWithWarppingTest)
-{
-    using namespace m6502;
-
-    cpu.X = 0xFF;
-    mem.Data[0x007F] = 0x69; 
-    mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ZERO_PAGE_X;
-    mem.Data[0xFFFD] = 0x80;
-
-    s32 cycles = 4;
-    cpu.execute(cycles, mem);
-
-    EXPECT_EQ(cpu.A, 0x69);
-}
-
-TEST_F(M6502CPUTest, ldaZeroPageXWithWarppingZeroFlagTest)
-{
-    using namespace m6502;
-
-    cpu.X = 0xFF;
-    mem.Data[0x007F] = 0x00; 
-    mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ZERO_PAGE_X;
-    mem.Data[0xFFFD] = 0x80;
-
-    s32 cycles = 4;
-    cpu.execute(cycles, mem);
-
-    EXPECT_EQ(cpu.A, 0x00);
-    EXPECT_TRUE(cpu.Z);
-}
-
-TEST_F(M6502CPUTest, ldaZeroPageXWithWarppingNegativeFlagTest)
-{
-    using namespace m6502;
-
-    cpu.X = 0xFF;
-    mem.Data[0x007F] = 0xFF; 
-    mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ZERO_PAGE_X;
-    mem.Data[0xFFFD] = 0x80;
-
-    s32 cycles = 4;
-    cpu.execute(cycles, mem);
-
-    EXPECT_EQ(cpu.A, 0xFF);
-    EXPECT_TRUE(cpu.N);
+    TestLoadRegisterZeroPageX( CPU::INSTRUCTION_LDA_ZERO_PAGE_X, &CPU::A);
 }
 
 //test for LDA ABSOLUTE addressing 
@@ -476,6 +434,15 @@ TEST_F(M6502CPUTest, ldxImmediateCanLoadValueIntoTheRegister)
     TestLoadRegisterImmediate(CPU::INSTRUCTION_LDX_IMMEDIATE, &CPU::X);
 }
 
+TEST_F(M6502CPUTest, ldxZeroPageYCanLoadValueIntoRegister)
+{
+    using namespace m6502;
+
+    TestLoadRegisterZeroPageY(
+        CPU::INSTRUCTION_LDX_ZERO_PAGE_Y,
+        &CPU::X);
+}
+
 // LDY
 TEST_F(M6502CPUTest, ldyImmediateCanLoadValueIntoTheRegister)
 {
@@ -484,6 +451,12 @@ TEST_F(M6502CPUTest, ldyImmediateCanLoadValueIntoTheRegister)
     TestLoadRegisterImmediate(CPU::INSTRUCTION_LDY_IMMEDIATE, &CPU::Y);
 }
 
+TEST_F(M6502CPUTest, ldyZeroPageXCanLoadValueIntoRegister)
+{
+    using namespace m6502;
+
+    TestLoadRegisterZeroPageX( CPU::INSTRUCTION_LDY_ZERO_PAGE_X, &CPU::Y);
+}
 //test for JSR
 TEST_F(M6502CPUTest, jsrTest)
 {

@@ -145,9 +145,17 @@ struct m6502::CPU
 
     //LDX
     static constexpr u8 INSTRUCTION_LDX_IMMEDIATE = 0xA2;
+    static constexpr u8 INSTRUCTION_LDX_ZERO_PAGE = 0xA6;
+    static constexpr u8 INSTRUCTION_LDX_ZERO_PAGE_Y = 0xB6;
+    static constexpr u8 INSTRUCTION_LDX_ABSOLUTE = 0xAE;
+    static constexpr u8 INSTRUCTION_LDX_ABSOLUTE_Y = 0xBE;
 
     //LDY
     static constexpr u8 INSTRUCTION_LDY_IMMEDIATE = 0xA0;
+    static constexpr u8 INSTRUCTION_LDY_ZERO_PAGE = 0xA4;
+    static constexpr u8 INSTRUCTION_LDY_ZERO_PAGE_X = 0xB4;
+    static constexpr u8 INSTRUCTION_LDY_ABSOLUTE = 0xAC;
+    static constexpr u8 INSTRUCTION_LDY_ABSOLUTE_X = 0xBC;
 
     //JSR
     static constexpr u8 INSTRUCTION_JSR = 0x20;
