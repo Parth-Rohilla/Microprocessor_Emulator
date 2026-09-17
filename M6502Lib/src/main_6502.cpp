@@ -39,6 +39,8 @@ namespace m6502
                 b8_address += X;
                 u8 value = readByte(cycles, b8_address, memory);
 
+                cycles--;
+
                 A = value;
 
                 setZeroAndNegativeFlags(A);

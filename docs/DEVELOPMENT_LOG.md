@@ -164,3 +164,78 @@ This is important because the current work already represents a significant part
 ### **Sign-Off**
 
 **Time:** 2:41 PM
+
+## 17 September 2026
+
+### What I Worked On
+
+Today I completed the **refactoring task for the 6502 Microprocessor Emulator**. With this, **Tutorial Fourth video of the tutorial series is officially completed**.
+
+The main focus was completing the refactoring of the GoogleTest file and cleaning up the existing project structure.
+
+### Test Suite Refactoring
+
+During the previous session, I decided to rebuild the GoogleTest file from scratch to better understand the project and its logic. However, after working on the new test file, I realized that I was making the test structure unnecessarily complicated by trying to combine too much logic into single tests and helpers.
+
+Because of this, I changed my approach.
+
+On the night of **16 September**, I went back to the earlier Git commit from around **30 June**, before the refactoring work had started. I restored only the original test file, **`main_6502_test.cpp`**, rather than reverting the entire project, so that the newer README, development log, and other project changes would remain intact.
+
+The newer test file, **`m6502_CPU_test.cpp`**, has been kept but is no longer being used as the primary test file.
+
+I then refactored the original test file extensively. Almost every line was changed or rewritten, making the final result feel effectively like a new test file while keeping the original testing approach simpler and more understandable.
+
+I am satisfied with the result because the refactoring now improves the structure without unnecessarily complicating the tests.
+
+### Load Instruction Refactoring
+
+The refactoring has now been completed for the applicable addressing modes of:
+
+* **LDA**
+* **LDX**
+* **LDY**
+
+The common test logic was refactored for:
+
+* Immediate
+* Zero Page
+* Zero Page, X
+* Zero Page, Y
+* Absolute
+* Absolute, X
+* Absolute, Y
+
+I did not refactor **Indexed Indirect, X** and **Indirect Indexed, Y** because they are currently used only by **LDA** in the emulator.
+
+I will handle these addressing modes later if they become relevant to other instructions such as store instructions. This also follows the approach used in the tutorial, where these addressing modes were not included in the same refactoring.
+
+### Bug Fix
+
+While working through the refactoring, I found a small bug in **`main_6502.cpp`**.
+
+The **LDA Zero Page, X** instruction was missing one cycle in its implementation. I corrected the instruction so that it now uses the appropriate number of cycles.
+
+### CMake and Test File Cleanup
+
+I also updated the **CMake configuration** to remove the test file that I decided not to continue using, **`m6502_CPU_test.cpp`**.
+
+Although that approach did not become part of the final implementation, experimenting with it was useful. It helped me understand what made the test structure unnecessarily complicated and gave me a clearer idea of how I want to approach the refactoring going forward.
+
+### Current Progress
+
+The refactoring task is now **complete**.
+
+The main code has also been cleaned up and organized under the **`m6502` namespace**. The GoogleTest suite has been refactored into a simpler and more reusable structure, and the small LDA Zero Page, X cycle bug has been fixed.
+
+
+
+### Next Step
+
+With **Tutorial Four completed**, I can now move forward to the next part of the 6502 emulator proje
+hat is the fifth video of toutorial i.e finally implementing the LDX and LDY instructions
+T
+
+### Sign-Off
+
+**Time:** 11:15 PM
+**Date:** 17 September 202ion.
