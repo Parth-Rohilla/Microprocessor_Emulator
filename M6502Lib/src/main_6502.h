@@ -81,12 +81,11 @@ struct m6502::CPU
         PC++;
         cycles--;
 
-        
         u8 highByte = memory.Data[PC];
         PC++;
         cycles--;
         
-        u16 data = (highByte << 8) | lowByte;
+        u16 data = ((highByte << 8) | lowByte);
 
         return data ;
     }
@@ -162,9 +161,19 @@ struct m6502::CPU
 
     s32 execute(s32 cycles,MEM& memory);
     
-    void setZeroAndNegativeFlags(u8 value)
+    void setZeroAndNegativeFlags(u8 Register)
     {
-        Z = (value == 0);
-        N = (value & 0b10000000) > 0;
+        Z = (Register == 0);
+        N = (Register & 0b10000000) > 0;
     }
+
+    //------------------------------------------------------------------------------------------------------------------
+    //Addressing Modes
+    //------------------------------------------------------------------------------------------------------------------------
+    u16 addressFromZeroPage(s32& cycles, MEM& memory);
+    u16 addressFromZeroPageX(s32& cycles, MEM& memory);
+    u16 addressFromZeroPageY(s32& cycles, MEM& memory);
+    u16 addressFromAbsolute(s32& cycles, MEM& memory);
+    u16 addressFromAbsoluteX(s32& cycles, MEM& memory);
+    u16 addressFromAbsoluteY(s32& cycles, MEM& memory);
 };

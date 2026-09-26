@@ -303,7 +303,7 @@ void M6502CPUTest::testLoadAbsoluteYInstructions(m6502::u8 OpCodeToTest, m6502::
 
     cpu.Y = 0x01;
     mem.Data[0x1300] = 0x69;
-    mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_ABSOLUTE_Y;
+    mem.Data[0xFFFC] = OpCodeToTest;
     mem.Data[0xFFFD] = 0xFF;
     mem.Data[0xFFFE] = 0x12; //0x12FF + X(0x01) = 0x1300 (page crossed)
     
@@ -537,6 +537,7 @@ TEST_F(M6502CPUTest, ldxAbsolute)
     testLoadAbsoluteInstructions(CPU::INSTRUCTION_LDX_ABSOLUTE, &CPU::X);
 }
 
+//LDX Absolute Y
 TEST_F(M6502CPUTest, ldxAbsoluteY)
 {
     using namespace m6502;

@@ -238,4 +238,160 @@ T
 ### Sign-Off
 
 **Time:** 11:15 PM
-**Date:** 17 September 202ion.
+**Date:** 17 September 2026.
+
+## 27 September 2026
+
+### What I Worked On
+
+Today I completed the **fifth tutorial video of the 6502 Microprocessor Emulator tutorial series** that I have been following. With this, the implementation of the **LDX and LDY load instructions** has been completed.
+
+The fifth video was relatively short, around **30 minutes**, and mainly focused on implementing and refactoring the logic required for LDX and LDY. Although the actual implementation was fairly simple, I spent around **three hours** working through the video, understanding what was being done, comparing it with my existing code, and implementing the changes properly.
+
+I started working at approximately **11:30 PM on 26 September** and finished at around **3:05 AM on 27 September**.
+
+As with the previous tutorial, I am not following the tutorial completely one-to-one. There are some functions and improvements that were not implemented in the tutorial but that I have already implemented in my own project. Therefore, I first noted down the changes made in the video and then went through them one by one, adapting them to my own implementation rather than blindly copying everything.
+
+### LDX and LDY Implementation
+
+The main task for this session was completing the remaining load instructions for **LDX** and **LDY**.
+
+I first implemented the **Immediate addressing mode** for both LDX and LDY. This was straightforward because Immediate addressing does not require an additional addressing-mode helper function.
+
+While working on the load instructions, I also made a small cleanup to the existing code.
+
+Previously, when loading a value into a register, I was sometimes creating an intermediate variable to store the result of a function and then assigning that variable to the register. This meant that the same operation required an unnecessary middle variable.
+
+I changed this so that the register receives the result of the function directly.
+
+For example, instead of using an intermediate value:
+
+```cpp
+u8 value = readByte(...);
+X = value;
+```
+
+the operation can directly assign the returned value:
+
+```cpp
+X = readByte(...);
+```
+
+This does not make a major difference in the number of lines of code, but it removes an unnecessary variable and makes the code cleaner and more direct.
+
+### Flag Function Cleanup
+
+I also renamed the parameter used by the **Zero and Negative flag-setting function**.
+
+Previously, I had named the parameter `value`. However, after looking at how the function was being used, I realized that what I was passing to the function was actually a **CPU register**, rather than a generic value.
+
+Therefore, I changed the parameter name to better represent what the function is actually receiving.
+
+This is a small change, but it makes the purpose of the function clearer and makes the code easier to understand.
+
+### Addressing Mode Refactoring
+
+After implementing the Immediate addressing mode, I continued refactoring the remaining addressing modes for LDX and LDY.
+
+The process was fairly straightforward because most of the required logic had already been implemented for LDA and could be reused.
+
+I refactored the required addressing modes including:
+
+* Zero Page
+* Zero Page, X
+* Zero Page, Y
+* Absolute
+* Absolute, X
+* Absolute, Y
+
+One additional addressing mode needed to be implemented specifically for LDX: **Zero Page, Y**.
+
+The logic for this was very similar to the existing Zero Page, X implementation. Therefore, I reused the existing structure and adapted it from X indexing to Y indexing.
+
+After implementing the required addressing modes, I connected them to the corresponding LDX and LDY instructions and verified that the tests were working.
+
+### Completion of Load Instructions
+
+With today's work completed, **LDA, LDX, and LDY now have their applicable instructions and tests implemented**.
+
+The common addressing-mode and testing logic has also been refactored so that the same functionality can be reused rather than duplicated for every instruction.
+
+This completes the load-instruction portion of the project.
+
+The overall progression is now:
+
+```text
+LDA
+ ├── Immediate
+ ├── Zero Page
+ ├── Zero Page, X
+ ├── Absolute
+ ├── Absolute, X
+ ├── Absolute, Y
+ ├── Indexed Indirect, X
+ └── Indirect Indexed, Y
+
+LDX
+ ├── Immediate
+ ├── Zero Page
+ ├── Zero Page, Y
+ ├── Absolute
+ └── Absolute, Y
+
+LDY
+ ├── Immediate
+ ├── Zero Page
+ ├── Zero Page, X
+ ├── Absolute
+ └── Absolute, X
+```
+
+The exact set of addressing modes differs between the instructions because the 6502 does not support every addressing mode for every load instruction.
+
+### Tutorial Progress
+
+With today's work, the **fifth tutorial video is officially completed**.
+
+The tutorial itself was relatively short, but I still took time to understand what was being changed instead of simply copying the implementation. Since I have already made some changes and additions that differ from the tutorial, I adapted the tutorial's approach to fit the current structure of my emulator.
+
+I also had another unexpected break in my development schedule because, as usual, the day became more hectic than expected. Even so, I was able to complete the entire task during this session.
+
+### Current Progress
+
+The implementation and testing of the **LDA, LDX, and LDY load instructions are now complete**.
+
+The code has also become more reusable through the addressing-mode refactoring, and unnecessary intermediate variables have been removed from some of the instruction implementations.
+
+With **Tutorial Five completed**, the next major decision is what direction to take the project next.
+
+### Next Step
+
+For the next session, I need to decide between two possible directions.
+
+The first option is to continue following the emulator development path and start implementing the **store instructions**.
+
+The second option is to temporarily focus on making the current emulator into a more presentable **version 0.5 / beta-style release**, such as creating a downloadable or easily runnable version that I could showcase on GitHub.
+
+Having a more complete and usable version of the emulator could also be useful for my **resume and future internship interviews**, rather than only having the source code of an unfinished development project.
+
+Alongside this decision, I also want to spend some time strengthening my understanding of some C++ concepts that have been confusing me during the development of the emulator.
+
+In particular, I want to properly revise:
+
+* **Pointers vs references**
+* `*` vs `&`
+* **Pass-by-value vs pass-by-reference**
+* **Function declaration and definition**
+* **Function prototypes**
+* **Pointers to class members / member pointers**
+* The terminology and differences between these concepts
+
+I understand most of these concepts individually, but I want to make my understanding much stronger so that I am not simply using these features because they appear in the tutorial or existing code.
+
+Therefore, the next session will involve both deciding the next development direction of the emulator and strengthening these fundamental C++ concepts.
+
+### Sign-Off
+
+**Time:** 3:05 AM
+*Date:** 27 September 2026
+
