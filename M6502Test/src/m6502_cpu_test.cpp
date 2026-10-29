@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "../../M6502Lib/src/main_6502.h"
 
-class M6502CPUTest : public testing::Test
+class M6502LoadInstructionsTests : public testing::Test
 {
     public:
         m6502::MEM mem;
@@ -34,22 +34,22 @@ class M6502CPUTest : public testing::Test
 };
 
 //helper functions 
-void M6502CPUTest::testLoadInstructionsImmediateLoadValveIntoRegister(m6502::u8 m6502::CPU::*Register, m6502::CPU* CPUAfterExecution)
+void M6502LoadInstructionsTests::testLoadInstructionsImmediateLoadValveIntoRegister(m6502::u8 m6502::CPU::*Register, m6502::CPU* CPUAfterExecution)
 {
     EXPECT_EQ(CPUAfterExecution->*Register, 0x69);
 }
 
-void M6502CPUTest::testNFlagRegisterChangeAccordingly(m6502::u8 m6502::CPU::*RegisterUsed, m6502::CPU CPUAfterExecution)
+void M6502LoadInstructionsTests::testNFlagRegisterChangeAccordingly(m6502::u8 m6502::CPU::*RegisterUsed, m6502::CPU CPUAfterExecution)
 {
     EXPECT_EQ(CPUAfterExecution.N, ((cpu.*RegisterUsed & 0x80) != 0));
 }
 
-void M6502CPUTest::testZFlagRegisterChangeAccordingly(m6502::u8 m6502::CPU::*RegisterUsed, m6502::CPU CPUAfterExecution)
+void M6502LoadInstructionsTests::testZFlagRegisterChangeAccordingly(m6502::u8 m6502::CPU::*RegisterUsed, m6502::CPU CPUAfterExecution)
 {
     EXPECT_EQ(CPUAfterExecution.Z, cpu.*RegisterUsed == 0);
 }
 
-void M6502CPUTest::testAfterLoadImmediateCIDBVFlagRegistersRemainUnchanged(m6502::CPU CPUBeforeExecution, m6502::CPU CPUAfterExecution)
+void M6502LoadInstructionsTests::testAfterLoadImmediateCIDBVFlagRegistersRemainUnchanged(m6502::CPU CPUBeforeExecution, m6502::CPU CPUAfterExecution)
 {
     using namespace m6502;
 
@@ -61,21 +61,21 @@ void M6502CPUTest::testAfterLoadImmediateCIDBVFlagRegistersRemainUnchanged(m6502
     
 }
 
-void M6502CPUTest::testPCChances(m6502::CPU CPUBeforeExecution, m6502::CPU CPUAfterExecution)
+void M6502LoadInstructionsTests::testPCChances(m6502::CPU CPUBeforeExecution, m6502::CPU CPUAfterExecution)
 {
     using namespace m6502;
 
     EXPECT_NE(CPUBeforeExecution.PC, CPUAfterExecution.PC);
 }
 
-void M6502CPUTest::testClockCyclesAreUsedCorrectly(m6502::s32 GivenCycle, m6502::s32 ConsumedCycle)
+void M6502LoadInstructionsTests::testClockCyclesAreUsedCorrectly(m6502::s32 GivenCycle, m6502::s32 ConsumedCycle)
 {
     using namespace m6502;
 
     EXPECT_EQ(GivenCycle, ConsumedCycle);
 }
 
-void M6502CPUTest::testSPRemainUnchanged(m6502::CPU CPUBeforeExecution, m6502::CPU CPUAfterExecution)
+void M6502LoadInstructionsTests::testSPRemainUnchanged(m6502::CPU CPUBeforeExecution, m6502::CPU CPUAfterExecution)
 {
     using namespace m6502;
 
@@ -84,7 +84,7 @@ void M6502CPUTest::testSPRemainUnchanged(m6502::CPU CPUBeforeExecution, m6502::C
 
 //General CPU execution tests
 
-TEST_F(M6502CPUTest, executeWithZeroCyclesDoesNothing)
+TEST_F(M6502LoadInstructionsTests, executeWithZeroCyclesDoesNothing)
 {
     using namespace m6502;
 
@@ -96,7 +96,7 @@ TEST_F(M6502CPUTest, executeWithZeroCyclesDoesNothing)
 //test when the instruction is need more cycle then what is given by the user to complete the instruction.
 //i.e it removes the need to calculate the cpu cycle before hand which is cpu's job.
 
-TEST_F(M6502CPUTest, CPUCanExcuteMoreCyclesThanRequestedIfRequiredByTheInstruction)
+TEST_F(M6502LoadInstructionsTests, CPUCanExcuteMoreCyclesThanRequestedIfRequiredByTheInstruction)
 {
     using namespace m6502;
 
@@ -110,7 +110,7 @@ TEST_F(M6502CPUTest, CPUCanExcuteMoreCyclesThanRequestedIfRequiredByTheInstructi
 
 // to see if the cpu can handel unknown opcode or instructions and 
 // to test that the PC is incremented after even a "BAD" instrustion 
-TEST_F(M6502CPUTest, executingABadInstucionDoesNotPutUsInInfintiteLoop)
+TEST_F(M6502LoadInstructionsTests, executingABadInstucionDoesNotPutUsInInfintiteLoop)
 {
     using namespace m6502;
 
@@ -127,7 +127,7 @@ TEST_F(M6502CPUTest, executingABadInstucionDoesNotPutUsInInfintiteLoop)
 
 //tests for instructions 
 // tests for LDA instruction
-TEST_F(M6502CPUTest, ldaImmdiate)
+TEST_F(M6502LoadInstructionsTests, ldaImmdiate)
 {
     using namespace m6502;
 

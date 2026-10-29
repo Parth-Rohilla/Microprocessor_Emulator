@@ -395,3 +395,91 @@ Therefore, the next session will involve both deciding the next development dire
 **Time:** 3:05 AM
 *Date:** 27 September 2026
 
+# 30 October 2026
+
+## What I Worked On
+
+After almost a month since my last development log on 27 September, I finally sat down and continued working on my 6502 Microprocessor Emulator project.
+
+October was quite hectic because of my birthday, examinations, file submissions, and other responsibilities. I also spent time applying for internships and part-time jobs, hoping to focus more on finding an opportunity. However, I did not get the response I was expecting, so I have decided to focus on improving the project further and making it more presentable.
+
+Today, I completed the **sixth tutorial video** and finished writing the unit tests for all three store instructions: **STA, STX, and STY**.
+
+## Code Cleanup and Test File Organization
+
+I made some changes to improve the existing code. Since the addressing helper functions and other helper functions only need to read memory, I made their memory parameters constant wherever appropriate. This helps prevent accidental modifications to memory from functions that are only supposed to read it.
+
+I also reorganized the unit test files. Previously, the load-register tests and other tests were kept together in one large file, which was becoming difficult to navigate.
+
+I renamed the existing file to `6502LoadRegisterTest.cpp` and created a separate file named `6502StoreRegisterTest.cpp` for the store-register tests.
+
+I plan to follow the same approach for future instruction groups. Keeping related tests in separate files should make the project easier to manage as it grows.
+
+## Learning About Lambda Functions
+
+While following the sixth tutorial video, I also encountered **lambda functions** in C++.
+
+I studied their basic syntax, including the capture list and parameter list. My understanding is that lambda functions allow us to write small functions directly where they are needed, keeping related logic together without always having to create a separate named function.
+
+I still need to understand their uses more deeply, but this gave me a good starting point.
+
+I also continued revising C++ fundamentals, including pointers, references, pass-by-value, pass-by-reference, and pointers to class members. I understand these concepts better than before, although some parts are still confusing. I am continuing to learn them through practical examples while working on the emulator.
+
+## Store Instruction Unit Tests
+
+The main achievement of this session was completing the unit tests for the three store instructions:
+
+- **STA — Store Accumulator**
+- **STX — Store X Register**
+- **STY — Store Y Register**
+
+These instructions perform the reverse operation of the load instructions. While load instructions read data from memory into a CPU register, store instructions write the value of a CPU register into memory.
+
+Since I had already implemented and tested the load instructions, I could reuse a similar testing approach for the store instructions and adapt it to their behaviour.
+
+I created the required helper functions and organized the new tests in the separate store-register test file.
+
+With this work completed, **the unit tests for STA, STX, and STY are now complete**. The next step is to implement their actual behaviour in the emulator and verify that everything works correctly.
+
+## Tutorial Progress and Current Status
+
+With this session, the sixth tutorial video is officially completed.
+
+The current progress is:
+
+```text
+Load Instructions
+├── LDA
+├── LDX
+└── LDY
+
+Store Instruction Unit Tests
+├── STA
+├── STX
+└── STY
+```
+
+The load instructions and their applicable tests were completed earlier. The store-instruction tests are now ready, but the actual store-instruction implementation remains the next task.
+
+## Next Step
+
+For the next session, I plan to watch the **seventh tutorial video** and make notes about the changes required to implement the store instructions.
+
+I want to turn those notes into a checklist and then follow it while implementing the code myself. The tutorial should give me the direction, while I use my own understanding and problem-solving skills to complete the implementation rather than blindly copying the code.
+
+After completing the store instructions, I want to shift my attention towards making the emulator more presentable.
+
+My goal is to prepare an initial **version 0.5 or beta release**, potentially with a simple GUI and a downloadable Windows executable. I want recruiters and other developers to be able to download and try the emulator easily through GitHub instead of having to compile and run the source code themselves.
+
+I will explore using AI tools to help with the GUI and packaging while making sure I understand how the application works.
+
+This will be an important milestone for the project. Before adding many more instructions, I want to make the work I have already completed easier for others to see, run, and evaluate.
+
+## Sign-Off
+
+**Date:** 30 October 2026  
+**Time:** 00:37 local time
+
+**Tutorial Six completed. STA, STX, and STY unit tests completed.**
+
+Signing off for now. The next session will focus on implementing the store instructions, followed by preparations for an initial beta release.

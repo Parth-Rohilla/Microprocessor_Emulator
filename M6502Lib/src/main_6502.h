@@ -53,7 +53,7 @@ struct m6502::CPU
 
     }
 
-    u8 fetchByte(s32& cycles,MEM& memory)
+    u8 fetchByte(s32& cycles, const MEM& memory)
     {
         u8 data = memory.Data[PC];
         PC++;
@@ -61,7 +61,7 @@ struct m6502::CPU
         return data ;
     }
 
-    u8 readByte(s32& cycles,u16 address,MEM& memory)
+    u8 readByte(s32& cycles, u16 address, MEM& memory)
     {
         u8 data = memory.Data[address];
         cycles--;
@@ -74,7 +74,7 @@ struct m6502::CPU
         cycles--;
     }
 
-    u16 fetchWord(s32& cycles, MEM& memory)
+    u16 fetchWord(s32& cycles, const MEM& memory)
     {
         
         u8 lowByte = memory.Data[PC];
@@ -129,9 +129,10 @@ struct m6502::CPU
 
         return memory.Data[0x0100 + SP];
     }
-
+    //-------------------------------------------------------------------------------------------------------------------------
     //opcodes
-
+    //---------------------------------------------------------------------------------------------------------------------
+    
     //LDA
     static constexpr u8 INSTRUCTION_LDA_IMMEDIATE = 0xA9;
     static constexpr u8 INSTRUCTION_LDA_ZERO_PAGE = 0xA5;
@@ -156,6 +157,25 @@ struct m6502::CPU
     static constexpr u8 INSTRUCTION_LDY_ABSOLUTE = 0xAC;
     static constexpr u8 INSTRUCTION_LDY_ABSOLUTE_X = 0xBC;
 
+    //STA
+    static constexpr u8 INSTRUCTION_STA_ZERO_PAGE = 0x85;
+    static constexpr u8 INSTRUCTION_STA_ZERO_PAGE_X = 0x95;
+    static constexpr u8 INSTRUCTION_STA_ABSOLUTE = 0x8D;
+    static constexpr u8 INSTRUCTION_STA_ABSOLUTE_X = 0x9D;
+    static constexpr u8 INSTRUCTION_STA_ABSOLUTE_Y = 0x99;
+    static constexpr u8 INSTRUCTION_STA_INDIRECT_X = 0x81;
+    static constexpr u8 INSTRUCTION_STA_INDIRECT_Y = 0x91;
+
+    //STX
+    static constexpr u8 INSTRUCTION_STX_ZERO_PAGE = 0x86;
+    static constexpr u8 INSTRUCTION_STX_ZERO_PAGE_Y = 0x96;
+    static constexpr u8 INSTRUCTION_STX_ABSOLUTE = 0x8E;
+
+    //STY
+    static constexpr u8 INSTRUCTION_STY_ZERO_PAGE = 0x84;
+    static constexpr u8 INSTRUCTION_STY_ZERO_PAGE_X = 0x94;
+    static constexpr u8 INSTRUCTION_STY_ABSOLUTE = 0x8C;
+
     //JSR
     static constexpr u8 INSTRUCTION_JSR = 0x20;
 
@@ -170,10 +190,10 @@ struct m6502::CPU
     //------------------------------------------------------------------------------------------------------------------
     //Addressing Modes
     //------------------------------------------------------------------------------------------------------------------------
-    u16 addressFromZeroPage(s32& cycles, MEM& memory);
-    u16 addressFromZeroPageX(s32& cycles, MEM& memory);
-    u16 addressFromZeroPageY(s32& cycles, MEM& memory);
-    u16 addressFromAbsolute(s32& cycles, MEM& memory);
-    u16 addressFromAbsoluteX(s32& cycles, MEM& memory);
-    u16 addressFromAbsoluteY(s32& cycles, MEM& memory);
+    u16 addressFromZeroPage(s32& cycles, const MEM& memory);
+    u16 addressFromZeroPageX(s32& cycles, const MEM& memory);
+    u16 addressFromZeroPageY(s32& cycles, const MEM& memory);
+    u16 addressFromAbsolute(s32& cycles, const MEM& memory);
+    u16 addressFromAbsoluteX(s32& cycles, const MEM& memory);
+    u16 addressFromAbsoluteY(s32& cycles, const MEM& memory);
 };

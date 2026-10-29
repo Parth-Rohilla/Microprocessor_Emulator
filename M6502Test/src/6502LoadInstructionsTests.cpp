@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "../../M6502Lib/src/main_6502.h"
 
-class M6502CPUTest : public testing::Test 
+class M6502LoadInstructionsTests : public testing::Test 
 {
 public:
     m6502::MEM mem;
@@ -25,15 +25,15 @@ public:
     void testLoadAbsoluteInstructions(m6502::u8 OpCodeToTest, m6502::u8 m6502::CPU::*RegisterToTest);
     void testLoadAbsoluteXInstructions(m6502::u8 OpCodeToTest, m6502::u8 m6502::CPU::*RegisterToTest);
     void testLoadAbsoluteYInstructions(m6502::u8 OpCodeToTest, m6502::u8 m6502::CPU::*RegisterToTest);
-
-
+    void testLoadIndirectXInstructions(m6502::u8 OpCodeToTest, m6502::u8 m6502::CPU::*RegisterToTest);
+    void testLoadIndirectYInstructions(m6502::u8 OpCodeToTest, m6502::u8 m6502::CPU::*RegisterToTest);
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 //Helper functions
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 
-void M6502CPUTest::testCIDBVFlagesRemainUnchanged(m6502::CPU B_CPU, m6502::CPU A_CPU)
+void M6502LoadInstructionsTests::testCIDBVFlagesRemainUnchanged(m6502::CPU B_CPU, m6502::CPU A_CPU)
 {
     EXPECT_EQ(B_CPU.C, A_CPU.C);
     EXPECT_EQ(B_CPU.I, A_CPU.I);
@@ -42,13 +42,13 @@ void M6502CPUTest::testCIDBVFlagesRemainUnchanged(m6502::CPU B_CPU, m6502::CPU A
     EXPECT_EQ(B_CPU.V, A_CPU.V);
 }
 
-void M6502CPUTest::testNandZFlagsChangesAccordling(m6502::CPU cpu, m6502::u8 value)
+void M6502LoadInstructionsTests::testNandZFlagsChangesAccordling(m6502::CPU cpu, m6502::u8 value)
 {
     EXPECT_EQ(cpu.Z, value == 0);
     EXPECT_EQ(cpu.N, ((value & 0x80) != 0));
 }
 
-void M6502CPUTest::testLoadImmediateInstructions(m6502::u8 OpCodeToTest, m6502::u8 m6502::CPU::*RegisterToTest)
+void M6502LoadInstructionsTests::testLoadImmediateInstructions(m6502::u8 OpCodeToTest, m6502::u8 m6502::CPU::*RegisterToTest)
 {
     using namespace m6502;
 
@@ -71,7 +71,7 @@ void M6502CPUTest::testLoadImmediateInstructions(m6502::u8 OpCodeToTest, m6502::
 
 }
 
-void M6502CPUTest::testLoadZeroPageInstructions(m6502::u8 OpCodeToTest, m6502::u8 m6502::CPU::*ResisterToTest)
+void M6502LoadInstructionsTests::testLoadZeroPageInstructions(m6502::u8 OpCodeToTest, m6502::u8 m6502::CPU::*ResisterToTest)
 {
     using namespace m6502;
 
@@ -94,7 +94,7 @@ void M6502CPUTest::testLoadZeroPageInstructions(m6502::u8 OpCodeToTest, m6502::u
     testCIDBVFlagesRemainUnchanged(CPUBeforeExecution, CPUAfterExecution);
 }
 
-void M6502CPUTest::testLoadZeroPageXInstructions(m6502::u8 OpCodeToTest, m6502::u8 m6502::CPU::*RegisterToTest)
+void M6502LoadInstructionsTests::testLoadZeroPageXInstructions(m6502::u8 OpCodeToTest, m6502::u8 m6502::CPU::*RegisterToTest)
 {
     using namespace m6502;
 
@@ -143,7 +143,7 @@ void M6502CPUTest::testLoadZeroPageXInstructions(m6502::u8 OpCodeToTest, m6502::
     testCIDBVFlagesRemainUnchanged(CPUBeforeExecution, CPUAfterExecution);    
 }
 
-void M6502CPUTest::testLoadZeroPageYInstructions(m6502::u8 OpCodeToTest, m6502::u8 m6502::CPU::*RegisterToTest)
+void M6502LoadInstructionsTests::testLoadZeroPageYInstructions(m6502::u8 OpCodeToTest, m6502::u8 m6502::CPU::*RegisterToTest)
 {
     using namespace m6502;
 
@@ -192,7 +192,7 @@ void M6502CPUTest::testLoadZeroPageYInstructions(m6502::u8 OpCodeToTest, m6502::
     testCIDBVFlagesRemainUnchanged(CPUBeforeExecution, CPUAfterExecution);    
 }
 
-void M6502CPUTest::testLoadAbsoluteInstructions(m6502::u8 OpCodeToTest, m6502::u8 m6502::CPU::*RegisterToTest)
+void M6502LoadInstructionsTests::testLoadAbsoluteInstructions(m6502::u8 OpCodeToTest, m6502::u8 m6502::CPU::*RegisterToTest)
 {
     using namespace m6502;
 
@@ -217,7 +217,7 @@ void M6502CPUTest::testLoadAbsoluteInstructions(m6502::u8 OpCodeToTest, m6502::u
     testCIDBVFlagesRemainUnchanged(CPUBeforeExecution, CPUAfterExecution); 
 }
 
-void M6502CPUTest::testLoadAbsoluteXInstructions(m6502::u8 OpCodeToTest, m6502::u8 m6502::CPU::*RegisterToTest)
+void M6502LoadInstructionsTests::testLoadAbsoluteXInstructions(m6502::u8 OpCodeToTest, m6502::u8 m6502::CPU::*RegisterToTest)
 {
     //without page crossed (4 cycle)
     using namespace m6502;
@@ -266,11 +266,10 @@ void M6502CPUTest::testLoadAbsoluteXInstructions(m6502::u8 OpCodeToTest, m6502::
 
     testNandZFlagsChangesAccordling(CPUAfterExecution, 0x69);
     testCIDBVFlagesRemainUnchanged(CPUBeforeExecution, CPUAfterExecution);
-
 
 }
 
-void M6502CPUTest::testLoadAbsoluteYInstructions(m6502::u8 OpCodeToTest, m6502::u8 m6502::CPU::*RegisterToTest)
+void M6502LoadInstructionsTests::testLoadAbsoluteYInstructions(m6502::u8 OpCodeToTest, m6502::u8 m6502::CPU::*RegisterToTest)
 {
     //without page crossed (4 cycle)
     using namespace m6502;
@@ -321,6 +320,68 @@ void M6502CPUTest::testLoadAbsoluteYInstructions(m6502::u8 OpCodeToTest, m6502::
 
     testNandZFlagsChangesAccordling(CPUAfterExecution, 0x69);
     testCIDBVFlagesRemainUnchanged(CPUBeforeExecution, CPUAfterExecution);
+}
+
+void M6502LoadInstructionsTests::testLoadIndirectXInstructions(m6502::u8 OpCodeTotest, m6502::u8 m6502::CPU::*RegisterToTest)
+{
+    using namespace m6502;
+
+    cpu.X = 0x4;
+    mem.Data[0x44] = 0x00;
+    mem.Data[0x45] = 0x80;
+    mem.Data[0x8000] = 0x69;
+    mem.Data[0xFFFC] = OpCodeTotest;
+    mem.Data[0xFFFD] = 0x40;
+
+    s32 cycles = 6;
+    s32 cyclesUsed = cpu.execute(cycles, mem);
+
+    EXPECT_EQ(cpu.*RegisterToTest, 0x69);
+    EXPECT_EQ(cyclesUsed, 6);
+    EXPECT_EQ(cpu.PC, 0xFFFE);
+    EXPECT_FALSE(cpu.Z);
+    EXPECT_FALSE(cpu.N);
+}
+
+void M6502LoadInstructionsTests::testLoadIndirectYInstructions(m6502::u8 OpCodeTotest, m6502::u8 m6502::CPU::*RegisterToTest)
+{
+ //test for LDA INDIRECT Y without page crossing
+    using namespace m6502;
+
+    cpu.Y = 0x4;
+    mem.Data[0x40] = 0x00;
+    mem.Data[0x41] = 0x80; 
+    mem.Data[0x8004] = 0x69;
+    mem.Data[0xFFFC] = OpCodeTotest;
+    mem.Data[0xFFFD] = 0x40;
+
+    s32 cycles = 5;
+    s32 cyclesUsed = cpu.execute(cycles, mem);
+
+    EXPECT_EQ(cpu.*RegisterToTest, 0x69);
+    EXPECT_EQ(cyclesUsed, 5);
+    EXPECT_EQ(cpu.PC, 0xFFFE);
+    EXPECT_FALSE(cpu.Z);
+    EXPECT_FALSE(cpu.N);
+
+ //test for LDA INDIRECT Y with page crossing
+    cpu.reset(mem);
+
+    cpu.Y = 0x4;
+    mem.Data[0x40] = 0xFF;
+    mem.Data[0x41] = 0x08; //0x08FF ->0x08FF + 0x04 -> 0x0903
+    mem.Data[0x0903] = 0x69;
+    mem.Data[0xFFFC] = OpCodeTotest;
+    mem.Data[0xFFFD] = 0x40;
+
+    cycles = 6;
+    cyclesUsed = cpu.execute(cycles, mem);
+
+    EXPECT_EQ(cpu.*RegisterToTest, 0x69);
+    EXPECT_EQ(cyclesUsed, 6);
+    EXPECT_EQ(cpu.PC, 0xFFFE);
+    EXPECT_FALSE(cpu.Z);
+    EXPECT_FALSE(cpu.N);
 }
 
 
@@ -329,7 +390,7 @@ void M6502CPUTest::testLoadAbsoluteYInstructions(m6502::u8 OpCodeToTest, m6502::
 //----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 //test for when cycle is 0
-TEST_F(M6502CPUTest, theCPUDoesNothingWhenWeExecuteZeroCycles)
+TEST_F(M6502LoadInstructionsTests, theCPUDoesNothingWhenWeExecuteZeroCycles)
 {
     using namespace m6502;
 
@@ -340,7 +401,7 @@ TEST_F(M6502CPUTest, theCPUDoesNothingWhenWeExecuteZeroCycles)
 
 //test when the instruction is need more cycle then which is given by the user to complete the instruction. 
 //removes the need to calculate the cpu cycle before hand which is cpu's job.
-TEST_F(M6502CPUTest, theCPUCanExecuteMoreCyclesThanRequestedIfRequiredByTheInstruction)
+TEST_F(M6502LoadInstructionsTests, theCPUCanExecuteMoreCyclesThanRequestedIfRequiredByTheInstruction)
 {
     using namespace m6502;
 
@@ -353,7 +414,7 @@ TEST_F(M6502CPUTest, theCPUCanExecuteMoreCyclesThanRequestedIfRequiredByTheInstr
 }
 
 //see if the cpu can handle the unknown opcode or instructions
-TEST_F(M6502CPUTest, executingABadInstructionDoesNotPutUsInAnInfiniteLoop)
+TEST_F(M6502LoadInstructionsTests, executingABadInstructionDoesNotPutUsInAnInfiniteLoop)
 {
     using namespace m6502;
 
@@ -368,7 +429,7 @@ TEST_F(M6502CPUTest, executingABadInstructionDoesNotPutUsInAnInfiniteLoop)
 }
 
 //test that the PC is incremented afetr a even "bad" instruction
-TEST_F(M6502CPUTest, badInstructionAdvancesProgramCounter)
+TEST_F(M6502LoadInstructionsTests, badInstructionAdvancesProgramCounter)
 {
     using namespace m6502;
 
@@ -384,7 +445,7 @@ TEST_F(M6502CPUTest, badInstructionAdvancesProgramCounter)
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 
 //LDA immediate
-TEST_F(M6502CPUTest, ldaImmediate)
+TEST_F(M6502LoadInstructionsTests, ldaImmediate)
 {
     using namespace m6502;
 
@@ -392,7 +453,7 @@ TEST_F(M6502CPUTest, ldaImmediate)
 }
 
 //test for LDA ZERO PAGE 
-TEST_F(M6502CPUTest, ldaZeroPageTest)
+TEST_F(M6502LoadInstructionsTests, ldaZeroPageTest)
 {
     using namespace m6502;
 
@@ -400,7 +461,7 @@ TEST_F(M6502CPUTest, ldaZeroPageTest)
 }
 
 // test for ZERO PAGE X 
-TEST_F(M6502CPUTest, ldaZeroPageX)
+TEST_F(M6502LoadInstructionsTests, ldaZeroPageX)
 {
     using namespace m6502;
 
@@ -408,7 +469,7 @@ TEST_F(M6502CPUTest, ldaZeroPageX)
 }
 
 //test for LDA ABSOLUTE 
-TEST_F(M6502CPUTest, ldaAbsolute)
+TEST_F(M6502LoadInstructionsTests, ldaAbsolute)
 {
     using namespace m6502;
 
@@ -416,7 +477,7 @@ TEST_F(M6502CPUTest, ldaAbsolute)
 }
 
 //test for LDA ABSOLUTE X 
-TEST_F(M6502CPUTest, ldaAbsoluteX)
+TEST_F(M6502LoadInstructionsTests, ldaAbsoluteX)
 {
     using namespace m6502;
 
@@ -424,7 +485,7 @@ TEST_F(M6502CPUTest, ldaAbsoluteX)
 }
 
 //test for LDA ABSOLUTE Y
-TEST_F(M6502CPUTest, ldaAbsoluteY)
+TEST_F(M6502LoadInstructionsTests, ldaAbsoluteY)
 {
     using namespace m6502;
 
@@ -432,81 +493,25 @@ TEST_F(M6502CPUTest, ldaAbsoluteY)
 }
 
 //test for LDA INDIRECT X
-TEST_F(M6502CPUTest, ldaIndirectXCanLoadValueInAccumulatorTest)
+TEST_F(M6502LoadInstructionsTests, ldaIndirectX)
 {
     using namespace m6502;
-
-    cpu.X = 0x4;
-    mem.Data[0x44] = 0x00;
-    mem.Data[0x45] = 0x80;
-    mem.Data[0x8000] = 0x69;
-    mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_INDIRECT_X;
-    mem.Data[0xFFFD] = 0x40;
-
-    s32 cycles = 6;
-    s32 cyclesUsed = cpu.execute(cycles, mem);
-
-    EXPECT_EQ(cpu.A, 0x69);
-    EXPECT_EQ(cyclesUsed, 6);
-    EXPECT_EQ(cpu.PC, 0xFFFE);
-    EXPECT_FALSE(cpu.Z);
-    EXPECT_FALSE(cpu.N);
-
+    testLoadIndirectXInstructions(CPU::INSTRUCTION_LDA_INDIRECT_X, &CPU::A);
 }
 
 //test for LDA INDIRECT Y
-
-//test for LDA INDIRECT Y without page crossing
-TEST_F(M6502CPUTest, ldaIndirectYWithoutPageCrossingCanLoadValueInAccumulatorTest)
+TEST_F(M6502LoadInstructionsTests, ldaIndirectY)
 {
     using namespace m6502;
-
-    cpu.Y = 0x4;
-    mem.Data[0x40] = 0x00;
-    mem.Data[0x41] = 0x80; 
-    mem.Data[0x8004] = 0x69;
-    mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_INDIRECT_Y;
-    mem.Data[0xFFFD] = 0x40;
-
-    s32 cycles = 5;
-    s32 cyclesUsed = cpu.execute(cycles, mem);
-
-    EXPECT_EQ(cpu.A, 0x69);
-    EXPECT_EQ(cyclesUsed, 5);
-    EXPECT_EQ(cpu.PC, 0xFFFE);
-    EXPECT_FALSE(cpu.Z);
-    EXPECT_FALSE(cpu.N);
-
+    testLoadIndirectYInstructions(CPU::INSTRUCTION_LDA_INDIRECT_Y, &CPU::A);
 }
 
-//test for LDA INDIRECT Y with page crossing
-TEST_F(M6502CPUTest, ldaIndirectYWithPageCrossingCanLoadValueInAccumulatorTest)
-{
-    using namespace m6502;
-
-    cpu.Y = 0x4;
-    mem.Data[0x40] = 0xFF;
-    mem.Data[0x41] = 0x08; //0x08FF ->0x08FF + 0x04 -> 0x0903
-    mem.Data[0x0903] = 0x69;
-    mem.Data[0xFFFC] = CPU::INSTRUCTION_LDA_INDIRECT_Y;
-    mem.Data[0xFFFD] = 0x40;
-
-    s32 cycles = 6;
-    s32 cyclesUsed = cpu.execute(cycles, mem);
-
-    EXPECT_EQ(cpu.A, 0x69);
-    EXPECT_EQ(cyclesUsed, 6);
-    EXPECT_EQ(cpu.PC, 0xFFFE);
-    EXPECT_FALSE(cpu.Z);
-    EXPECT_FALSE(cpu.N);
-
-}
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //tests for LDX instructions
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 //LDX immediate
-TEST_F(M6502CPUTest, ldxImmediate)
+TEST_F(M6502LoadInstructionsTests, ldxImmediate)
 {
     using namespace m6502;
 
@@ -514,7 +519,7 @@ TEST_F(M6502CPUTest, ldxImmediate)
 }
 
 //LDX zero page
-TEST_F(M6502CPUTest, ldxZeroPage)
+TEST_F(M6502LoadInstructionsTests, ldxZeroPage)
 {
     using namespace m6502;
 
@@ -522,7 +527,7 @@ TEST_F(M6502CPUTest, ldxZeroPage)
 }
 
 //LDX zeropage Y
-TEST_F(M6502CPUTest, ldxZeroPageY)
+TEST_F(M6502LoadInstructionsTests, ldxZeroPageY)
 {
     using namespace m6502;
 
@@ -530,7 +535,7 @@ TEST_F(M6502CPUTest, ldxZeroPageY)
 }
 
 //LDX Absolute
-TEST_F(M6502CPUTest, ldxAbsolute)
+TEST_F(M6502LoadInstructionsTests, ldxAbsolute)
 {
     using namespace m6502;
 
@@ -538,7 +543,7 @@ TEST_F(M6502CPUTest, ldxAbsolute)
 }
 
 //LDX Absolute Y
-TEST_F(M6502CPUTest, ldxAbsoluteY)
+TEST_F(M6502LoadInstructionsTests, ldxAbsoluteY)
 {
     using namespace m6502;
 
@@ -550,7 +555,7 @@ TEST_F(M6502CPUTest, ldxAbsoluteY)
 //--------------------------------------------------------------------------------------------------------------------------------------------
 
 //LDY immediate
-TEST_F(M6502CPUTest, ldyImmediate)
+TEST_F(M6502LoadInstructionsTests, ldyImmediate)
 {
     using namespace m6502;
 
@@ -558,7 +563,7 @@ TEST_F(M6502CPUTest, ldyImmediate)
 }
 
 //LDY zeropage
-TEST_F(M6502CPUTest, ldyZeroPage)
+TEST_F(M6502LoadInstructionsTests, ldyZeroPage)
 {
     using namespace m6502;
 
@@ -566,7 +571,7 @@ TEST_F(M6502CPUTest, ldyZeroPage)
 }
 
 //LDY ZeroPage X
-TEST_F(M6502CPUTest, ldyZeroPageX)
+TEST_F(M6502LoadInstructionsTests, ldyZeroPageX)
 {
     using namespace m6502;
 
@@ -574,14 +579,14 @@ TEST_F(M6502CPUTest, ldyZeroPageX)
 }
 
 //LDY absolute
-TEST_F(M6502CPUTest, ldyAbsolute)
+TEST_F(M6502LoadInstructionsTests, ldyAbsolute)
 {
     using namespace m6502;
 
     testLoadAbsoluteInstructions(CPU::INSTRUCTION_LDY_ABSOLUTE, &CPU::Y);
 }
 
-TEST_F(M6502CPUTest, ldyAbsoluteX)
+TEST_F(M6502LoadInstructionsTests, ldyAbsoluteX)
 {
     using namespace m6502;
 
@@ -592,7 +597,7 @@ TEST_F(M6502CPUTest, ldyAbsoluteX)
 //test for JSR
 //-------------------------------------------------------------------------------------------------------------------------------------------------------
 
-TEST_F(M6502CPUTest, jsrTest)
+TEST_F(M6502LoadInstructionsTests, jsrTest)
 {
     using namespace m6502;
 
